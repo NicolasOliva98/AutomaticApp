@@ -9,6 +9,7 @@ import RegisterScreen from './screens/Register'
 import PerfilScreen from './screens/Perfil'
 import BluetoothScreen from './screens/Bluetooth'
 import MainScreen from './screens/Main'
+import FirtsScreen from './screens/firts'
 
 
 if (Text.defaultProps == null) Text.defaultProps = {};
@@ -16,8 +17,8 @@ Text.defaultProps.allowFontScaling = false;
 
 
 const OnboardingNavigator = createStackNavigator({
-  Main:{
-    screen: MainScreen,
+  Firts:{
+    screen: FirtsScreen,
   },
   Login: {
     screen: LoginScreen,
@@ -26,7 +27,7 @@ const OnboardingNavigator = createStackNavigator({
     screen: RegisterScreen, 
   },
 }, {
-  initialRouteName: 'Main',
+  initialRouteName: 'Firts',
   headerMode: 'none'
 })
 

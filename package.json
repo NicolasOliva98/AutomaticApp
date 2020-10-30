@@ -16,6 +16,7 @@
     "react": "16.13.1",
     "react-native": "0.63.2",
     "react-native-animatable": "^1.3.3",
+    "react-native-app-intro-slider": "^4.0.4",
     "react-native-bluetooth-serial-next": "^1.2.3",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-magnus": "^1.0.42",
