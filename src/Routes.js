@@ -8,27 +8,32 @@ import LoginScreen from './screens/Login'
 import RegisterScreen from './screens/Register'
 import PerfilScreen from './screens/Perfil'
 import BluetoothScreen from './screens/Bluetooth'
+import MainScreen from './screens/Main'
 
 
 if (Text.defaultProps == null) Text.defaultProps = {};
 Text.defaultProps.allowFontScaling = false;
 
+
 const OnboardingNavigator = createStackNavigator({
+  Main:{
+    screen: MainScreen,
+  },
   Login: {
     screen: LoginScreen,
   },
   Register: {
-    screen: RegisterScreen,
+    screen: RegisterScreen, 
   },
 }, {
-  initialRouteName: 'Login',
+  initialRouteName: 'Main',
   headerMode: 'none'
 })
-
 
 const AppNavigator = createStackNavigator({
     Home: {
         screen: HomeScreen,
+
     },
     Perfil:{
       screen: PerfilScreen,

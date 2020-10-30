@@ -5,6 +5,13 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as Animatable from 'react-native-animatable'
 import useForm from '../hooks/useForm'
 
+const colors = {
+    primary:'#f5f5f5',
+    secondary: '#d7fbe8',
+    info:'#409b74',
+    dark:'#40514e'
+}
+
 export default ({ navigation }) => {
 
     const initialState = {
@@ -46,7 +53,7 @@ export default ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor='#409b74' barStyle='light-content' />
+            <StatusBar backgroundColor={colors.info} barStyle='light-content' />
             <View style={styles.header}>
                 <View style={{justifyContent:'center', alignItems: 'center'}}>
                 <Image source={{ uri: 'https://automatic-us-east-1.s3.amazonaws.com/Logoautomatic.png' }} style={{height: 70, width:200 }} />
@@ -91,20 +98,21 @@ export default ({ navigation }) => {
                 </View>
                 <View style={styles.button}>
                     <TouchableOpacity style={[styles.signIn, {
-                        backgroundColor: '#1f1f1f',
+                        backgroundColor: colors.info,
                         marginTop: 15
                     }]} onPress={handleSubmit}>
                         <Text style={[styles.textSign, { color: 'white' }]}>Ingresar</Text>
                     </TouchableOpacity>
+
                     <TouchableOpacity onPress={() => navigation.navigate('Register')}
                         style={[styles.signIn, {
-                            borderColor: '#222',
+                            borderColor: colors.info,
                             borderWidth: 1,
                             marginTop: 15
                         }]}
                     >
                         <Text style={[styles.textSign, {
-                            color: '#222'
+                            color: colors.dark
                         }]}>
                             Registrarse
                     </Text>

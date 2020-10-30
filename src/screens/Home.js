@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator,StatusBar } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, StatusBar } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import Icon from 'react-native-vector-icons/Ionicons'
+
 const colors = {
     primary:'#f5f5f5',
     secondary: '#d7fbe8',
-    info:'#11999e',
+    info:'#409b74',
     dark:'#40514e'
 }
 
@@ -24,23 +25,24 @@ const Home = ({ navigation }) => {
     }, [])
     return (
         <SafeAreaView style={styles.container}>
-              <StatusBar backgroundColor={colors.info} barStyle='light-content' />
+            <StatusBar backgroundColor={colors.info} barStyle='light-content' />
             {loading ?
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'#fff' }}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
                     <ActivityIndicator color="#000" size="large" />
                     <Text style={{ color: '#fff' }}>Cargando...</Text>
                 </View> :
                 <View style={styles.container}>
-                       <TouchableOpacity onPress={() => {
-                            navigation.navigate('Perfil')}}
-                            style={[styles.signIn, {
-                                backgroundColor: colors.dark,
-                                borderColor: colors.dark,
-                                borderWidth: 1,
-                                marginTop: 15
-                            }]}>
-                            <Text style={[styles.textSign, {color: colors.secondary}]}>Perfil</Text>
-                        </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('Perfil')
+                    }}
+                        style={[styles.signIn, {
+                            backgroundColor: colors.dark,
+                            borderColor: colors.dark,
+                            borderWidth: 1,
+                            marginTop: 15
+                        }]}>
+                        <Text style={[styles.textSign, { color: colors.secondary }]}>Perfil</Text>
+                    </TouchableOpacity>
                 </View>
             }
         </SafeAreaView>
@@ -64,17 +66,17 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold'
     },
-    buttonsave:{
-        width:40,
-        height:40,
+    buttonsave: {
+        width: 40,
+        height: 40,
         borderColor: colors.dark,
-        borderWidth:2,
-        borderRadius:50,
+        borderWidth: 2,
+        borderRadius: 50,
         justifyContent: 'center', alignItems: 'center',
-        color:colors.primary,
+        color: colors.primary,
         position: 'absolute',
-        right:10,
-        top:10
+        right: 10,
+        top: 10
     }
 })
 
