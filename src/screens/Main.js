@@ -34,7 +34,7 @@ export default () => {
         },
     ])
 
-    const _renderItem = ({ item, index }) => {
+    const _renderItem = ({ item, index }) => { 
         return (
             <View style={{ backgroundColor: '#ccc', borderRadius: 15, height: 450 }}>
                 <ImageBackground borderRadius={15} style={{
