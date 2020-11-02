@@ -4,10 +4,10 @@ import AsyncStorage from '@react-native-community/async-storage'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const colors = {
-    primary:'#f5f5f5',
+    primary: '#f5f5f5',
     secondary: '#d7fbe8',
-    info:'#409b74',
-    dark:'#40514e'
+    info: '#409b74',
+    dark: '#40514e'
 }
 
 const Home = ({ navigation }) => {
@@ -42,8 +42,22 @@ const Home = ({ navigation }) => {
                             marginTop: 15
                         }]}>
                         <Text style={[styles.textSign, { color: colors.secondary }]}>Perfil</Text>
+                    </TouchableOpacity> 
+
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('Bluetooth')
+                    }}
+                        style={[styles.signIn, {
+                            backgroundColor: colors.dark,
+                            borderColor: colors.dark,
+                            borderWidth: 1,
+                            marginTop: 15
+                        }]}>
+                        <Text style={[styles.textSign, { color: colors.secondary }]}>Perfil</Text>
                     </TouchableOpacity>
                 </View>
+
+                
             }
         </SafeAreaView>
     )

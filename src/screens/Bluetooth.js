@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Platform,
   Switch,
@@ -9,16 +9,16 @@ import {
   Modal,
   ToastAndroid,
   StatusBar
-} from "react-native";
-import BluetoothSerial, { withSubscription } from "react-native-bluetooth-serial-next";
-import { Buffer } from "buffer";
-import Button from "../components/Button";
-import DeviceList from "../components/DeviceList";
+} from 'react-native';
+import BluetoothSerial, { withSubscription } from 'react-native-bluetooth-serial-next';
+import { Buffer } from 'buffer';
+import Button from '../components/Button';
+import DeviceList from '../components/DeviceList';
 import styles from '../styles';
 
 global.Buffer = Buffer;
 
-const iconv = require("iconv-lite");
+const iconv = require('iconv-lite');
 
 class App extends React.Component {
   constructor(props) {
@@ -30,14 +30,12 @@ class App extends React.Component {
       devices: [],
       scanning: false,
       processing: false,
-      datos:'dato'
+      datos: ''
     };
   }
 
-
-
   async componentDidMount() {
-    const isEnabled= await BluetoothSerial.requestEnable();
+    const isEnabled = await BluetoothSerial.requestEnable();
     const devices = await BluetoothSerial.list();
     this.setState({
       isEnabled,
@@ -48,7 +46,7 @@ class App extends React.Component {
       }))
     });
     console.log(devices)
-    this.events = this.props.events; 
+    this.events = this.props.events;
 
     this.events.on("bluetoothEnabled", () => {
       ToastAndroid.show("Bluetooth activado", ToastAndroid.SHORT);
@@ -102,8 +100,8 @@ class App extends React.Component {
   requestEnable = () => async () => {
     try {
       await BluetoothSerial.requestEnable();
-      this.setState({isEnabled});
-      
+      this.setState({ isEnabled });
+
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
@@ -120,7 +118,6 @@ class App extends React.Component {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   };
-
   listDevices = async () => {
     try {
       const list = await BluetoothSerial.list();
@@ -142,7 +139,6 @@ class App extends React.Component {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   };
-
   discoverUnpairedDevices = async () => {
     this.setState({ scanning: true });
 
@@ -177,7 +173,6 @@ class App extends React.Component {
       }));
     }
   };
-
   cancelDiscovery = () => async () => {
     try {
       await BluetoothSerial.cancelDiscovery();
@@ -186,7 +181,6 @@ class App extends React.Component {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   };
-
   toggleDevicePairing = async ({ id, paired }) => {
     if (paired) {
       await this.unpairDevice(id);
@@ -194,7 +188,6 @@ class App extends React.Component {
       await this.pairDevice(id);
     }
   };
-
   pairDevice = async id => {
     this.setState({ processing: true });
 
@@ -234,7 +227,6 @@ class App extends React.Component {
       this.setState({ processing: false });
     }
   };
-
   unpairDevice = async id => {
     this.setState({ processing: true });
 
@@ -276,7 +268,6 @@ class App extends React.Component {
       this.setState({ processing: false });
     }
   };
-
   toggleDeviceConnection = async ({ id, connected }) => {
     if (connected) {
       await this.disconnect(id);
@@ -284,7 +275,6 @@ class App extends React.Component {
       await this.connect(id);
     }
   };
-
   connect = async id => {
     this.setState({ processing: true });
 
@@ -323,7 +313,6 @@ class App extends React.Component {
       this.setState({ processing: false });
     }
   };
-
   disconnect = async id => {
     this.setState({ processing: true });
 
@@ -352,7 +341,6 @@ class App extends React.Component {
       this.setState({ processing: false });
     }
   };
-
   write = async (id, message) => {
     try {
       await BluetoothSerial.device(id).write(message);
@@ -361,8 +349,6 @@ class App extends React.Component {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   };
-
-
   writePackets = async (id, message, packetSize = 64) => {
     try {
       const device = BluetoothSerial.device(id);
@@ -384,13 +370,12 @@ class App extends React.Component {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   };
-
   read = async () => {
     try {
       await BluetoothSerial.readEvery(
         (data, intervalId) => {
           console.log(data);
-          this.setState({datos: data})
+          this.setState({ datos: data })
           if (this.imBoredNow && intervalId) {
             clearInterval(intervalId);
           }
@@ -407,18 +392,16 @@ class App extends React.Component {
     try {
       await BluetoothSerial.read((data, subscription) => {
         console.log(data);
-      this.setState({datos: data})
+        this.setState({ datos: data })
         if (this.imBoredNow && subscription) {
           BluetoothSerial.removeSubscription(subscription);
         }
       }, "\r\n");
-      ToastAndroid.show("Datos leídos", ToastAndroid.SHORT);
+      //ToastAndroid.show("Datos leídos", ToastAndroid.SHORT);
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   }
-
-
   renderModal = (device, processing) => {
     if (!device) return null;
 
@@ -462,41 +445,20 @@ class App extends React.Component {
                 {connected && (
                   <>
                     <Button
-                      title="RED"
+                      title='Iniciar Riego'
                       style={{
-                        backgroundColor: "#red"
+                        backgroundColor: 'green'
                       }}
                       textStyle={{ color: "#fff" }}
-                      onPress={() => this.write(id, "R") && this.readOne(id)}
+                      onPress={() => this.write(id, "T")}
                     />
-                       <Button
-                      title="GREEN"
+                      <Button
+                      title='Detener Riego'
                       style={{
-                        backgroundColor: "green"
+                        backgroundColor: "red"
                       }}
                       textStyle={{ color: "#fff" }}
-                      onPress={() => this.write(id, "G") && this.readOne(id)}
-                    />
-                       <Button
-                      title="BLUE"
-                      style={{
-                        backgroundColor: "blue"   
-                      }}
-                      textStyle={{ color: "#fff" }}
-                      onPress={() => this.write(id, "B") && this.readOne(id)}
-                    />
-                    <Button
-                      title="Escribir por paquetes"
-                      style={{
-                        backgroundColor: "#22509d"
-                      }}
-                      textStyle={{ color: "#fff" }}
-                      onPress={() =>
-                        this.writePackets(
-                          id,
-                          "hOLA AMIKOSSS"
-                        )
-                      }
+                      onPress={() => this.write(id, "T")}
                     />
                     <Button
                       title="leer datos"
@@ -515,10 +477,10 @@ class App extends React.Component {
                   onPress={() => this.setState({ device: null })}
                 />
 
-              <Text>
-              {this.state.datos}
-              </Text>
-                 
+{/*                 <Text>
+                  {this.state.datos}    
+                </Text> */}
+
               </View>
             )}
           </View>
@@ -529,9 +491,8 @@ class App extends React.Component {
 
   render() {
     const { isEnabled, device, devices, processing } = this.state;
-
     return (
-      <SafeAreaView style={{ flex: 1 }}>  
+      <SafeAreaView style={{ flex: 1 }}>
         <StatusBar backgroundColor='#22509d' />
         <View style={styles.topBar}>
           <Text style={styles.heading}>Listado de bluetooth</Text>
@@ -547,9 +508,8 @@ class App extends React.Component {
             />
           </View>
         </View>
-
         {!isEnabled ?
-          <View style={{ flex: 1, alignItems: "center", justifyContent: "center",backgroundColor:'#ccc' }} />
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: '#ccc' }} />
           :
           <>
             {this.renderModal(device, processing)}
@@ -560,7 +520,6 @@ class App extends React.Component {
             />
           </>
         }
-
         {/*    {scanning ? (isEnabled && (
             <View
               style={{
@@ -582,10 +541,10 @@ class App extends React.Component {
                 onRefresh={this.listDevices}
               />
             </>
-          )} */}
+          )} */
+        }
       </SafeAreaView>
     );
   }
 }
-
 export default withSubscription({ subscriptionName: "events" })(App);

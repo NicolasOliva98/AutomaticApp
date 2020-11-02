@@ -61,9 +61,7 @@ export default ({ navigation }) => {
                 </View>
                 
             </View>
-            <Animatable.View style={styles.footer}
-                animation='fadeIn'
-            >
+            <Animatable.View style={styles.footer} animation='fadeIn'>
                 <Text style={styles.text_footer}>Email</Text>
                 <View style={styles.action}>
                     <Icon

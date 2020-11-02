@@ -6,7 +6,7 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 
@@ -29,9 +29,7 @@ const data = [
     image: 'https://automatic-us-east-1.s3.amazonaws.com/ilustraciones/landing_page.png',
     bg: '#22bcb5',
   },
-];
-
-
+]
 
 const styles = StyleSheet.create({
   slide: {

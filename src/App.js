@@ -15,7 +15,6 @@ import BluetoothSerial, {
   withSubscription
 } from "react-native-bluetooth-serial-next";
 import { Buffer } from "buffer";
-import AsyncStorage from '@react-native-community/async-storage'
 import Button from "./components/Button";
 import DeviceList from "./components/DeviceList";
 import styles from "./styles";
