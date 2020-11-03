@@ -93,7 +93,7 @@ const Perfil = ({ navigation }) => {
                     />
                     <TextInput
                         autoCapitalize='none'
-                        placeholder={user.email}
+                        placeholder={'ingrese su correo'}
                         style={styles.TextInput}
                         keyboardType='email-address'
                         value={inputs.email}
@@ -112,8 +112,8 @@ const Perfil = ({ navigation }) => {
                         placeholder='example@gmail.com'
                         style={styles.TextInput}
                         keyboardType='email-address'
-                        value={user.rut}
-                        onChangeText={subscribe('email')}
+                        value={inputs.rut}
+                        onChangeText={subscribe('rut')}
                     />
                 </View>
                 <Text style={styles.text_footer}>Telefono</Text>
@@ -125,11 +125,11 @@ const Perfil = ({ navigation }) => {
                     />
                     <TextInput
                         autoCapitalize='none'
-                        placeholder='example@gmail.com'
+                        placeholder='ingrese su telefono'
                         style={styles.TextInput}
                         keyboardType='number-pad'
-                        value={user.telefono}
-                        onChangeText={subscribe('email')}
+                        value={inputs.telefono}
+                        onChangeText={subscribe('telefono')}
                     />
                 </View>
                 <Text style={styles.text_footer}>Dirección</Text>

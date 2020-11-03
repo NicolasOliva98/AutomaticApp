@@ -41,8 +41,8 @@ const Home = ({ navigation }) => {
                             borderWidth: 1,
                             marginTop: 15
                         }]}>
-                        <Text style={[styles.textSign, { color: colors.secondary }]}>Perfil</Text>
-                    </TouchableOpacity> 
+                        <Text style={[styles.textSign, { color: colors.primary }]}>Perfil</Text>
+                    </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('Bluetooth')
@@ -57,7 +57,7 @@ const Home = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
 
-                
+
             }
         </SafeAreaView>
     )
@@ -66,7 +66,8 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.primary
+        backgroundColor: colors.primary,
+        paddingHorizontal: 5
     },
     signIn: {
         width: '50%',
