@@ -1,16 +1,18 @@
 import React from 'react'
-import Text, { Dimensions } from 'react-native'
+import {Text, Dimensions } from 'react-native'
+
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer'
+
 import AuthLoading from './screens/AuthLoading'
 import HomeScreen from './screens/Home'
 import LoginScreen from './screens/Login'
 import RegisterScreen from './screens/Register'
 import PerfilScreen from './screens/Perfil'
 import BluetoothScreen from './screens/Bluetooth'
-import MainScreen from './screens/Main'
 import FirtsScreen from './screens/firts'
+import LogOutScreen from './screens/Logout'
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import SideBar from './components/SideBar'
@@ -31,7 +33,7 @@ const OnboardingNavigator = createStackNavigator({
     screen: RegisterScreen,
   },
 }, {
-  initialRouteName: 'Register',
+  initialRouteName: 'Firts',
   headerMode: 'none'
 })
 
@@ -55,7 +57,14 @@ const AppNavigator = createDrawerNavigator({
     screen: PerfilScreen,
     navigationOptions: {
       title: 'Mi Perfil',
-      drawerIcon: ({ tintColor }) => <Icon name='home' color={tintColor} size={sizeIcon} />
+      drawerIcon: ({ tintColor }) => <Icon name='person' color={tintColor} size={sizeIcon} />
+    }
+  },
+  LogOut: {
+    screen: LogOutScreen,
+    navigationOptions:{
+      title:'Cerrar Sessíon',
+      drawerIcon:({tintColor}) => <Icon name='md-log-in' color={tintColor} size={sizeIcon} />
     }
   }
 }, {

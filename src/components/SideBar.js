@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, ScrollView, ImageBackground, Image, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, ImageBackground, Image, StyleSheet,Button } from 'react-native'
 import { DrawerItems } from 'react-navigation-drawer';
 import AsyncStorage from '@react-native-community/async-storage'
 
 export default props => {
-
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState([])
     const fetchUser = async () => {

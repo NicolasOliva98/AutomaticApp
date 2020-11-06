@@ -12,20 +12,20 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 
 const data = [
   {
-    title: 'Title 1',
-    text: 'Description.\nSay something cool',
+    title: 'Riega con un solo click',
+    text: 'Riega\nSin moverte de tu cuarto',
     image: 'https://automatic-us-east-1.s3.amazonaws.com/ilustraciones/watering_plants.png',
     bg: '#febe29',
   },
   {
-    title: 'Title 2',
-    text: 'Other cool stuff',
+    title: 'Programa tu riego',
+    text: 'Deja regando tu jardín mientras sales',
     image: 'https://automatic-us-east-1.s3.amazonaws.com/ilustraciones/reminder_note.png',
     bg: '#59b2ab',
   },
   {
-    title: 'Rocket guy',
-    text: "I'm already out of descriptions\n\nLorem ipsum bla bla bla",
+    title: 'Lista tus riegos',
+    text: "Ve tus riegos\n que haz hecho para mantenerte al margen",
     image: 'https://automatic-us-east-1.s3.amazonaws.com/ilustraciones/landing_page.png',
     bg: '#22bcb5',
   },
@@ -46,11 +46,13 @@ const styles = StyleSheet.create({
   text: {
     color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
+    fontSize:16
   },
   title: {
-    fontSize: 22,
+    fontSize: 25,
     color: 'white',
     textAlign: 'center',
+    fontWeight:'bold'
   },
   paginationContainer: {
     position: 'absolute',
@@ -84,6 +86,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+    fontSize:17,
     fontWeight: '900',
     textAlign: 'center',
   },
