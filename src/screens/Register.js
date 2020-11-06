@@ -68,8 +68,12 @@ export default ({ navigation }) => {
                 </View>
             </View>
             <Animatable.View style={styles.footer}animation='fadeIn'>
+            <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
             <Text style={styles.text_footer}>Nombre</Text>
-                <View style={styles.action}>
+            <Text style={styles.text_footer}>Rut</Text>
+            <Text/>
+            </View>
+                <View style={[styles.action, { flexDirection:'row' }]}>
                     <Icon
                         name='ios-person'
                         color='#222'
@@ -82,41 +86,39 @@ export default ({ navigation }) => {
                         value={inputs.nombre}
                         onChangeText={subscribe('nombre')}
                     />
-                </View>
-                <Text style={styles.text_footer}>Rut</Text>
-                <View style={styles.action}>
-                    <Micon
+                   <Micon
                         name='card-account-details'                        
                         color='#222'
                         size={sizeicon}
                     />
-                    <TextInput
+                       <TextInput
                         autoCapitalize='none'
                         placeholder='11111111-1'
                         style={styles.TextInput}
                         value={inputs.rut}
-                        onChangeText={subscribe('rut')}
+                        onChangeText={subscribe('rut')} 
                     />
                 </View>
-                <Text style={styles.text_footer}>telefono</Text>
-                <View style={styles.action}>
-                    <Icon
+                <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+            <Text style={styles.text_footer}>Telefono</Text>
+            <Text style={styles.text_footer}>Dirección</Text>
+            <Text/>
+            </View>
+                <View style={[styles.action, { flexDirection:'row' }]}>
+                <Icon
                         name='md-phone-portrait-sharp'
                         color='#222'
                         size={sizeicon}
                     />
                     <TextInput
                         autoCapitalize='none'
-                        placeholder='Ingrese su numero de telefono'
+                        placeholder='+569 87654321'
                         style={styles.TextInput}
                         keyboardType='number-pad'
                         value={inputs.telefono}
                         onChangeText={subscribe('telefono')}
                     />
-                </View>
-                <Text style={styles.text_footer}>Dirección</Text>
-                <View style={styles.action}>
-                    <Icon
+                      <Icon
                         name='map'
                         color='#222'
                         size={sizeicon}
@@ -163,7 +165,7 @@ export default ({ navigation }) => {
                 </View>
                 <View style={styles.button}>
                     <TouchableOpacity    style={[styles.signIn, {
-                            backgroundColor: '#222',
+                            backgroundColor: colors.info,
                             marginTop: 15
                         }]} onPress={handleSubmit}>
                             <Text style={[styles.textSign, { color: 'white' }]}>Registrarse</Text>
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10
     },
     footer: {
-        flex: 4.5,
+        flex: 3,
         backgroundColor: '#fff',
         borderTopLeftRadius: 35,
         borderTopRightRadius: 35,
@@ -220,13 +222,14 @@ const styles = StyleSheet.create({
         marginTop: 2,
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
+        marginHorizontal:5,
         paddingBottom: 2,
         alignItems: 'center'
     },
     TextInput: {
         flex: 1,
         paddingLeft: 10,
-        color: '#000'
+        color: '#000',
     },
     button: {
         alignItems: 'center',

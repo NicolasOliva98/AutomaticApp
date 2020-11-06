@@ -2,6 +2,7 @@ import React from 'react'
 import Text from 'react-native'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
+import{ createDrawerNavigator } from 'react-navigation-drawer'
 import AuthLoading from './screens/AuthLoading'
 import HomeScreen from './screens/Home'
 import LoginScreen from './screens/Login'
@@ -27,11 +28,11 @@ const OnboardingNavigator = createStackNavigator({
     screen: RegisterScreen, 
   },
 }, {
-  initialRouteName: 'Firts',
+  initialRouteName: 'Register',
   headerMode: 'none'
 })
 
-const AppNavigator = createStackNavigator({
+const AppNavigator = createDrawerNavigator({
     Home: {
         screen: HomeScreen,
 

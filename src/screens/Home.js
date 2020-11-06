@@ -50,6 +50,7 @@ const Home = ({ navigation }) => {
                         style={[styles.signIn, {
                             backgroundColor: colors.dark,
                             borderColor: colors.dark,
+                            
                             borderWidth: 1,
                             marginTop: 15
                         }]}>
