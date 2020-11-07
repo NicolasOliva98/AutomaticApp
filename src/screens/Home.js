@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, StatusBar } from 'react-native'
+import { View, Text, StyleSheet, Image, SafeAreaView, ScrollView, ActivityIndicator, StatusBar } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
+import Header from '../components/Header'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const colors = {
@@ -12,51 +13,60 @@ const colors = {
 
 const Home = ({ navigation }) => {
     const [loading, setLoading] = useState(true)
-    const [user, setUser] = useState([])
-    const fetchUser = async () => {
-        const x = await AsyncStorage.getItem('token')
-        const res = await fetch('https://servelessautomatic.vercel.app/api/auth/me', { method: 'GET', headers: { 'Content-Type': 'application/json', authorization: x }, })
+    const [info, setInfo] = useState({
+        name:"Cargando...",
+        temp:"Cargando..",
+        humidity:"Cargando...",
+        desc:"Cargando...",
+        icon:"Cargando.."
+    })
+
+    const fetchWater = async () => {
+        const res = await fetch('http://api.openweathermap.org/data/2.5/weather?q=Santiago&lang=sp&appid=f6757f01d6a1bacc578d10c3308676b8&units=metric', {
+             method: 'GET', 
+             headers: { 
+                 'Content-Type': 'application/json'
+        }})
         const data = await res.json()
-        setUser(data)
+        setInfo({
+            name:data.name,
+            temp:data.main.temp,
+            humidity:data.main.humidity,
+            desc:data.weather[0].description,
+            icon:data.weather[0].icon,
+        })
         setLoading(false)
     }
     useEffect(() => {
-        fetchUser()
+        fetchWater()
     }, [])
+
+
+
+    const img = `https://openweathermap.org/img/w/${info.icon}.png`
+
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView>
             <StatusBar backgroundColor={colors.info} barStyle='light-content' />
             {loading ?
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
                     <ActivityIndicator color="#000" size="large" />
                     <Text style={{ color: '#fff' }}>Cargando...</Text>
                 </View> :
-                <View style={styles.container}>
-                    <TouchableOpacity onPress={() => {
-                        navigation.navigate('Perfil')
-                    }}
-                        style={[styles.signIn, {
-                            backgroundColor: colors.dark,
-                            borderColor: colors.dark,
-                            borderWidth: 1,
-                            marginTop: 15
-                        }]}>
-                        <Text style={[styles.textSign, { color: colors.primary }]}>Perfil</Text>
-                    </TouchableOpacity>
+                <>
+                    <Header title='Mi registro' iconName={'ios-menu'} onPress={() => navigation.openDrawer()} />
+                    <ScrollView>
+                        <View style={styles.container}>
+                        <Text>{info.name}</Text>
+                        <Image  style={{width:100,height:100}} source={{uri:img}}/>
+                        <Text>{info.temp} C°</Text>
+                        <Text>{info.desc} </Text>
+                        <Text>{info.humidity} %</Text>
 
-                    <TouchableOpacity onPress={() => {
-                        navigation.navigate('Bluetooth')
-                    }}
-                        style={[styles.signIn, {
-                            backgroundColor: colors.dark,
-                            borderColor: colors.dark,
-                            
-                            borderWidth: 1,
-                            marginTop: 15
-                        }]}>
-                        <Text style={[styles.textSign, { color: colors.secondary }]}>Perfil</Text>
-                    </TouchableOpacity>
-                </View>
+                    
+                        </View>
+                    </ScrollView>
+                </>
 
 
             }
@@ -67,7 +77,7 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.primary,
+        backgroundColor: '#fff',
         paddingHorizontal: 5
     },
     signIn: {

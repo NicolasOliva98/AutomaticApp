@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator,StatusBar,TextInput } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator,StatusBar,TextInput, Alert } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Header from '../components/Header'
@@ -29,21 +29,21 @@ const Perfil = ({ navigation }) => {
 
 
     const initialState = {
-        nombre:'',
-        telefono:'',
-        rut: '',
-        domicilio:'',
-        email: '',
-        password: '',
+        nombre: user.nombre,
+        telefono:user.telefono,
+        rut: user.rut,
+        domicilio: user.domicilio,
+        email: user.email,
+        password: user.password,
     }
     const onSubmit = (values) => { 
         if(inputs.nombre === '' || inputs.email === '' || inputs.password === '' || inputs.telefono === '' || inputs.domicilio === ''|| inputs.rut === ''){
             return Alert.alert('Error!','Debe llenar los campos correspondientes')
-        }else if(validate(inputs.rut) === false  ){
-            return Alert.alert('Error!', 'Rut no valido, porfavor ingrese el rut correcto. Ejemplo: 11111111-1')
+        /* }else if(validate(inputs.rut) === false  ){
+            return Alert.alert('Error!', 'Rut no valido, porfavor ingrese el rut correcto. Ejemplo: 11111111-1') */
         }else{
-        fetch('https://servelessautomatic.vercel.app/api/auth/register',{
-            method:'POST',
+        fetch(`https://servelessautomatic.vercel.app/api/auth/modify/${user._id}`,{
+            method:'PUT',
             headers:{
                 'Content-Type' : 'application/json',
             },
@@ -51,20 +51,14 @@ const Perfil = ({ navigation }) => {
         })
         .then(x => x.text())
         .then(x => {
-            if(x === 'Usuario creado con éxito!'){
-                return Alert.alert(
-                    'Exito',
-                    x,
-                    [
-                       { text: 'Ir al inicio', onPress:() => navigation.navigate('Login') } 
-                    ]
-                )
-            }
             Alert.alert(
-                'Error',
+                'Exito',
                 x,
+                [
+                   { text: 'Aceptar', onPress:() => navigation.navigate('Home') } 
+                ]
             )
-        })
+        })    
         }//finn else
     }
     const { subscribe, inputs, handleSubmit } = useForm(initialState, onSubmit)
@@ -77,7 +71,7 @@ const Perfil = ({ navigation }) => {
                     <Text style={{ color: '#fff' }}>Cargando...</Text>
                 </View> :
                 <View style={styles.container}>
-                    <Header title='Perfil' onPress={() => navigation.goBack()} />
+                    <Header title='Perfil' iconName={'arrow-back'} onPress={() => navigation.goBack()} />
                     <View style={{justifyContent: 'center', alignItems: 'center', paddingBottom:20, backgroundColor: colors.info }}>
                    {/*  <Text style={{ fontSize: 25, color: colors.dark, marginVertical:10,fontWeight: 'bold'}}>Editar Perfil</Text> */}
                         <Image style={{ width: 100, height: 100, borderRadius: 50, borderColor: colors.dark, borderWidth: 2}} source={{ uri: user.foto }} />
@@ -95,6 +89,7 @@ const Perfil = ({ navigation }) => {
                         autoCapitalize='none'
                         placeholder={'ingrese su correo'}
                         style={styles.TextInput}
+                        defaultValue={user.email}
                         keyboardType='email-address'
                         value={inputs.email}
                         onChangeText={subscribe('email')}
@@ -112,6 +107,7 @@ const Perfil = ({ navigation }) => {
                         placeholder='example@gmail.com'
                         style={styles.TextInput}
                         keyboardType='email-address'
+                        defaultValue={user.rut}
                         value={inputs.rut}
                         onChangeText={subscribe('rut')}
                     />
@@ -128,6 +124,7 @@ const Perfil = ({ navigation }) => {
                         placeholder='ingrese su telefono'
                         style={styles.TextInput}
                         keyboardType='number-pad'
+                        defaultValue={user.telefono}
                         value={inputs.telefono}
                         onChangeText={subscribe('telefono')}
                     />
@@ -141,24 +138,23 @@ const Perfil = ({ navigation }) => {
                     />
                     <TextInput
                         autoCapitalize='none'
-                        placeholder='example@gmail.com'
+                        placeholder='Ingrese se dirección nueva'
                         style={styles.TextInput}
-                        keyboardType='email-address'
-                        value={user.domicilio}
-                        onChangeText={subscribe('email')}
+                        keyboardType='default'
+                        defaultValue={user.domicilio}
+                        value={inputs.domicilio}
+                        onChangeText={subscribe('domicilio')}
                     />
                 </View>
 
-                       <TouchableOpacity onPress={() => {
-                            AsyncStorage.removeItem('token')
-                            navigation.navigate('Login')}}
+                       <TouchableOpacity onPress={handleSubmit}
                             style={[styles.signIn, {
                                 backgroundColor: colors.dark,
                                 borderColor: colors.dark,
                                 borderWidth: 1,
                                 marginTop: 15
                             }]}>
-                            <Text style={[styles.textSign, {color: colors.secondary}]}>Cerrar sesión</Text>
+                            <Text style={[styles.textSign, {color: colors.secondary}]}>Guardar datos</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.buttonsave}>

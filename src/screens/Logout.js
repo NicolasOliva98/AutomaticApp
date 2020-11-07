@@ -9,6 +9,6 @@ export default ({ navigation }) => {
          navigation.navigate('Login')
    }
    return AsyncStorage.removeItem('token'),
-   navigation.navigate('Login')
+   navigation.navigate('Welcome')
 }
 
