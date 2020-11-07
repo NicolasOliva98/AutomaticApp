@@ -11,7 +11,7 @@ import LoginScreen from './screens/Login'
 import RegisterScreen from './screens/Register'
 import PerfilScreen from './screens/Perfil'
 import BluetoothScreen from './screens/Bluetooth'
-import FirtsScreen from './screens/firts'
+import WelcomeScreen from './screens/Welcome'
 import LogOutScreen from './screens/Logout'
 
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -23,8 +23,8 @@ Text.defaultProps.allowFontScaling = false;
 const sizeIcon = 25;
 
 const OnboardingNavigator = createStackNavigator({
-  Firts: {
-    screen: FirtsScreen,
+  Welcome: {
+    screen: WelcomeScreen,
   },
   Login: {
     screen: LoginScreen,
@@ -33,7 +33,7 @@ const OnboardingNavigator = createStackNavigator({
     screen: RegisterScreen,
   },
 }, {
-  initialRouteName: 'Firts',
+  initialRouteName: 'Welcome',
   headerMode: 'none'
 })
 
