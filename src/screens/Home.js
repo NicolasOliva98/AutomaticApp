@@ -14,26 +14,27 @@ const colors = {
 const Home = ({ navigation }) => {
     const [loading, setLoading] = useState(true)
     const [info, setInfo] = useState({
-        name:"Cargando...",
-        temp:"Cargando..",
-        humidity:"Cargando...",
-        desc:"Cargando...",
-        icon:"Cargando.."
+        name: "Cargando...",
+        temp: "Cargando..",
+        humidity: "Cargando...",
+        desc: "Cargando...",
+        icon: "Cargando.."
     })
 
     const fetchWater = async () => {
         const res = await fetch('http://api.openweathermap.org/data/2.5/weather?q=Santiago&lang=sp&appid=f6757f01d6a1bacc578d10c3308676b8&units=metric', {
-             method: 'GET', 
-             headers: { 
-                 'Content-Type': 'application/json'
-        }})
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
         const data = await res.json()
         setInfo({
-            name:data.name,
-            temp:data.main.temp,
-            humidity:data.main.humidity,
-            desc:data.weather[0].description,
-            icon:data.weather[0].icon,
+            name: data.name,
+            temp: data.main.temp,
+            humidity: data.main.humidity,
+            desc: data.weather[0].description,
+            icon: data.weather[0].icon,
         })
         setLoading(false)
     }
@@ -41,10 +42,7 @@ const Home = ({ navigation }) => {
         fetchWater()
     }, [])
 
-
-
-    const img = `https://openweathermap.org/img/w/${info.icon}.png`
-
+    const img = `http://openweathermap.org/img/wn/${info.icon}@4x.png`
     return (
         <SafeAreaView>
             <StatusBar backgroundColor={colors.info} barStyle='light-content' />
@@ -55,29 +53,23 @@ const Home = ({ navigation }) => {
                 </View> :
                 <>
                     <Header title='Mi registro' iconName={'ios-menu'} onPress={() => navigation.openDrawer()} />
-                    <ScrollView>
+                    <ScrollView style={{ backgroundColor: '#fff' }}>
                         <View style={styles.container}>
-                        <Text>{info.name}</Text>
-                        <Image  style={{width:100,height:100}} source={{uri:img}}/>
-                        <Text>{info.temp} C°</Text>
-                        <Text>{info.desc} </Text>
-                        <Text>{info.humidity} %</Text>
-
-                    
+                            <Text>{info.name}</Text>
+                            <Image style={{ width: 170, height: 170 }} source={{ uri: img }} />
+                            <Text>{info.temp} C°</Text>
+                            <Text>{info.desc} </Text>
+                            <Text>{info.humidity} %</Text>
                         </View>
                     </ScrollView>
                 </>
-
-
             }
         </SafeAreaView>
     )
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         paddingHorizontal: 5
     },
     signIn: {
