@@ -14,6 +14,7 @@ import BluetoothSerial, { withSubscription } from 'react-native-bluetooth-serial
 import { Buffer } from 'buffer';
 import Button from '../components/Button';
 import DeviceList from '../components/DeviceList';
+import Header from '../components/Header';
 import styles from '../styles';
 
 global.Buffer = Buffer;
@@ -404,16 +405,14 @@ class App extends React.Component {
   }
   renderModal = (device, processing) => {
     if (!device) return null;
-
     const { id, name, paired, connected } = device;
 
     return (
       <Modal
-        animationType='slide'
+        animationType='fade'
         transparent={false}
         visible={true}
-        onRequestClose={() => { }}
-      >
+        onRequestClose={() => { }}>
         {device ? (
           <View
             style={{
@@ -423,9 +422,7 @@ class App extends React.Component {
             }}
           >
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>{name}</Text>
-            <Text style={{ fontSize: 14 }}>{id}</Text>
-
-            {processing && (
+          {processing && (
               <ActivityIndicator
                 style={{ marginTop: 15 }}
                 size={Platform.OS === "ios" ? 1 : 60}
@@ -476,11 +473,6 @@ class App extends React.Component {
                   title="Cerrar"
                   onPress={() => this.setState({ device: null })}
                 />
-
-{/*                 <Text>
-                  {this.state.datos}    
-                </Text> */}
-
               </View>
             )}
           </View>
@@ -493,21 +485,20 @@ class App extends React.Component {
     const { isEnabled, device, devices, processing } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar backgroundColor='#22509d' />
-        <View style={styles.topBar}>
-          <Text style={styles.heading}>Listado de bluetooth</Text>
-          <View style={styles.enableInfoWrapper}>
-            <Text style={{ fontSize: 15, color: "#fff", fontWeight: 'bold', paddingRight: 10 }}>
+        <StatusBar backgroundColor='#409b74' />
+        <Header title='Bluetooth' iconName={'arrow-back'} onPress={() => this.props.navigation.goBack()}>
+        <View style={styles.enableInfoWrapper}>
+            <Text style={{ fontSize: 15, color: "#fff", fontWeight: 'bold' }}>
               {isEnabled ? "ON" : "OFF"}
             </Text>
             <Switch
-              trackColor={{ false: "#767577", true: "#ccc" }}
-              thumbColor={isEnabled ? "#17b978" : "#ccc"}
+              trackColor={{ false: "#ccc", true: "#ffa62b" }}
+              thumbColor={isEnabled ? '#fff' : "#fff"}
               value={isEnabled}
               onValueChange={this.toggleBluetooth}
             />
           </View>
-        </View>
+          </Header>   
         {!isEnabled ?
           <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: '#ccc' }} />
           :
@@ -519,29 +510,6 @@ class App extends React.Component {
               onRefresh={this.listDevices}
             />
           </>
-        }
-        {/*    {scanning ? (isEnabled && (
-            <View
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <ActivityIndicator
-                style={{ marginBottom: 15 }}
-                size={Platform.OS === "ios" ? 1 : 60}
-              />
-            </View>)) : (
-            <>
-              {this.renderModal(device, processing)}
-              <DeviceList
-                devices={devices}
-                onDevicePressed={device => this.setState({ device })}
-                onRefresh={this.listDevices}
-              />
-            </>
-          )} */
         }
       </SafeAreaView>
     );

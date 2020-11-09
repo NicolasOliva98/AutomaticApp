@@ -33,56 +33,26 @@ class DeviceList extends React.Component {
   render() {
     const { devices = [] } = this.props;
     const { refreshing } = this.state;
-
-    
     return (
       <ScrollView
-        style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={this.onRefresh} />
-        }
-      >
+        style={styles.container}>
         <View style={styles.listContainer}>
           {devices.map(device => (
             <TouchableHighlight
               underlayColor="#ccc"
               key={device.id}
               style={styles.listItem}
-              onPress={this.onDevicePressed(device)}
-            >
+              onPress={this.onDevicePressed(device)}>
               <View style={{ flexDirection: "column" }}>
                 <View style={{ flexDirection: "row" }}>
-                  <Text
-                    style={[
-                      styles.listItemStatus,
-                      {
-                        backgroundColor: device.paired ? "green" : "gray"
-                      }
-                    ]}
-                  >
-                    {device.paired ? "Vinculado" : "No vinculado"}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.listItemStatus,
-                      {
-                        backgroundColor: device.connected ? "green" : "gray",
-                        marginLeft: 5
-                      }
-                    ]}
-                  >
+                  <Text style={[styles.listItemStatus,{backgroundColor: device.connected ? "green" : "gray",}]}>
                     {device.connected ? "Conectado" : "Desconectado"}
                   </Text>
                 </View>
-                <View
-                  style={{
-                    flexDirection: "column"
-                  }}
-                >
+                <View style={{flexDirection: "column" }}>
                   <Text style={{ fontWeight: "bold", fontSize: 18 }}>
                     {device.name}
                   </Text>
-                  <Text>{`${device.id}`}</Text>
                 </View>
               </View>
             </TouchableHighlight>

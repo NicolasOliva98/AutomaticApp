@@ -32,6 +32,8 @@ const Home = ({ navigation }) => {
         setInfo({
             name: data.name,
             temp: data.main.temp,
+            temp_min: data.main.temp_min,
+            temp_max: data.main.temp_max,
             humidity: data.main.humidity,
             desc: data.weather[0].description,
             icon: data.weather[0].icon,
@@ -54,13 +56,29 @@ const Home = ({ navigation }) => {
                 <>
                     <Header title='Mi registro' iconName={'ios-menu'} onPress={() => navigation.openDrawer()} />
                     <ScrollView style={{ backgroundColor: '#fff' }}>
-                        <View style={styles.container}>
-                            <Text>{info.name}</Text>
-                            <Image style={{ width: 170, height: 170 }} source={{ uri: img }} />
-                            <Text>{info.temp} C°</Text>
-                            <Text>{info.desc} </Text>
-                            <Text>{info.humidity} %</Text>
+
+                        <View style={{ flexDirection: 'row', paddingVertical: 10 }}>
+                            <View>
+                                <Image style={{ width: 190, height: 190 }} source={{ uri: img }} />
+                            </View>
+                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Icon name='location-sharp' size={25} color={colors.dark} />
+                                    <Text style={{ fontSize: 18, color: 'black' }}>{info.name}</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ fontSize: 85, fontWeight: 'bold', color: 'black' }}>{(info.temp).toFixed()}</Text>
+                                    <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'black', position: 'absolute', top: 25, right: -22 }}>°C</Text>
+                                </View>
+                                <Text style={{ fontSize: 20, color:'gray', textTransform: 'capitalize',fontWeight: 'bold'}}>{info.desc}</Text>
+                            </View>
                         </View>
+                        <View style={styles.detailsweather}>
+                            <Text>Minima: {(info.temp_min).toFixed()}°c</Text>
+                            <Text>Maxima: {(info.temp_max).toFixed()}°c</Text>
+                            <Text>Humedad: {info.humidity}%</Text>
+                        </View>
+
                     </ScrollView>
                 </>
             }
@@ -95,6 +113,14 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 10,
         top: 10
+    },
+    detailsweather: {
+        flexDirection: 'row', 
+        paddingHorizontal: 20, 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        height: 50, 
+        backgroundColor: colors.primary
     }
 })
 

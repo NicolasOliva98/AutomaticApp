@@ -11,8 +11,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-
-    backgroundColor: "#22509d"
+    backgroundColor: "#409b74"
   },
   heading: {
     fontWeight: "bold",
@@ -23,7 +22,10 @@ const styles = StyleSheet.create({
   enableInfoWrapper: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
+    position: 'absolute',
+    top:16,
+    right:15
   },
   listContainer: {
     borderColor: "#ccc",

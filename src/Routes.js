@@ -37,6 +37,7 @@ const OnboardingNavigator = createStackNavigator({
   headerMode: 'none'
 })
 
+
 const AppNavigator = createDrawerNavigator({
   Home: {
     screen: HomeScreen,
@@ -81,8 +82,8 @@ const AppNavigator = createDrawerNavigator({
     itemStyle: {
       borderRadius: 10
     }
-  }
-
+  },
+ 
 })
 
 const BaseStack = createSwitchNavigator({
