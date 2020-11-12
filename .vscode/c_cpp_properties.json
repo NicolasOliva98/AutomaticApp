@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:\\Users\\Nicolás Oliva\\Documents\\Arduino\\libraries\\ArduinoJson\\src",
+                "C:\\Users\\Nicolás Oliva\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
+                "C:\\Users\\Nicolás Oliva\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\**",
+                "E:\\Program Files (x86)\\Arduino\\tools\\**",
+                "E:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**",
+                "D:\\react-native\\new react android\\bluetooth\\bluetoothserialnext\\Automatic_Riego\\data"
+            ],
+            "forcedInclude": [],
+            "intelliSenseMode": "msvc-x64",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

@@ -31,7 +31,8 @@ class App extends React.Component {
       devices: [],
       scanning: false,
       processing: false,
-      datos: ''
+      datos: '',
+      newdata: {}
     };
   }
 
@@ -375,13 +376,13 @@ class App extends React.Component {
     try {
       await BluetoothSerial.readEvery(
         (data, intervalId) => {
-          console.log(data);
-          this.setState({ datos: data })
+          this.setState({ datos: data });
+        this.setState({ newdata: JSON.parse(this.state.datos) });
           if (this.imBoredNow && intervalId) {
             clearInterval(intervalId);
           }
         },
-        1000,
+        10000,
         "\r\n"
       );
       ToastAndroid.show("Leyendo datos", ToastAndroid.SHORT);
@@ -392,12 +393,12 @@ class App extends React.Component {
   readOne = async () => {
     try {
       await BluetoothSerial.read((data, subscription) => {
-        console.log(data);
-        this.setState({ datos: data })
+        this.setState({ datos: data });
+        this.setState({ newdata: JSON.parse(this.state.datos) });
         if (this.imBoredNow && subscription) {
           BluetoothSerial.removeSubscription(subscription);
         }
-      }, "\r\n");
+      },"\r\n");
       //ToastAndroid.show("Datos leídos", ToastAndroid.SHORT);
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
@@ -407,6 +408,8 @@ class App extends React.Component {
     if (!device) return null;
     const { id, name, paired, connected } = device;
 
+      
+    
     return (
       <Modal
         animationType='fade'
@@ -422,7 +425,7 @@ class App extends React.Component {
             }}
           >
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>{name}</Text>
-          {processing && (
+            {processing && (
               <ActivityIndicator
                 style={{ marginTop: 15 }}
                 size={Platform.OS === "ios" ? 1 : 60}
@@ -449,7 +452,7 @@ class App extends React.Component {
                       textStyle={{ color: "#fff" }}
                       onPress={() => this.write(id, "T")}
                     />
-                      <Button
+                    <Button
                       title='Detener Riego'
                       style={{
                         backgroundColor: "red"
@@ -473,6 +476,19 @@ class App extends React.Component {
                   title="Cerrar"
                   onPress={() => this.setState({ device: null })}
                 />
+              {this.state.datos === '' ? null :
+                <>
+                <Text>temperatura:  {this.state.newdata.temperatura}°c</Text>
+                <Text>humedad relativa:  {this.state.newdata.humedad}%</Text>
+                <Text>humedad suelo:  {this.state.newdata.suelo}</Text>
+              </>
+              
+              }
+                
+               
+
+
+
               </View>
             )}
           </View>
@@ -481,13 +497,17 @@ class App extends React.Component {
     );
   };
 
+
+
+
+
   render() {
     const { isEnabled, device, devices, processing } = this.state;
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar backgroundColor='#409b74' />
         <Header title='Bluetooth' iconName={'arrow-back'} onPress={() => this.props.navigation.goBack()}>
-        <View style={styles.enableInfoWrapper}>
+          <View style={styles.enableInfoWrapper}>
             <Text style={{ fontSize: 15, color: "#fff", fontWeight: 'bold' }}>
               {isEnabled ? "ON" : "OFF"}
             </Text>
@@ -498,7 +518,7 @@ class App extends React.Component {
               onValueChange={this.toggleBluetooth}
             />
           </View>
-          </Header>   
+        </Header>
         {!isEnabled ?
           <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: '#ccc' }} />
           :
