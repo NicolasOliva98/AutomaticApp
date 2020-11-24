@@ -4,11 +4,21 @@
 
 import 'react-native';
 import React from 'react';
-import App from '../App';
+import Login from '../../AutomaticApp/src/screens/Login'
+import Register from '../../AutomaticApp/src/screens/Register'
+import Welcome from '../../AutomaticApp/src/screens/Welcome'
 
-// Note: test renderer must be required after react-native.
+
 import renderer from 'react-test-renderer';
 
-it('renders correctly', () => {
-  renderer.create(<App />);
+it('Register test unitario', () => {
+  renderer.create(<Register />);
 });
+it('Login test unitario', () => {
+  renderer.create(<Login />);
+});
+it('WelcomeScreen test unitario', () => {
+  renderer.create(<Welcome />);
+});
+
+

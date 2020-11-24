@@ -20,6 +20,8 @@ target 'bluetoothserialnext' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+  pod 'RollbarReactNative', :path => '../node_modules/rollbar-react-native'
+
   target 'bluetoothserialnextTests' do
     inherit! :complete
     # Pods for testing

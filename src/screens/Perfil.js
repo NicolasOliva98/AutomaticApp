@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import Header from '../components/Header'
 import useForm from '../hooks/useForm'
 import { validate, clean, format } from '../components/rut'
+import { Client } from 'rollbar-react-native'
+const rollbar = new Client('5bd9c0b5e69042e8882f955c0bed1699');
 
 const colors = {
     primary:'#f5f5f5',
@@ -27,7 +29,7 @@ const Perfil = ({ navigation }) => {
         fetchUser()
     }, [])
 
-
+    rollbar.info('Pagina perfil de usuario')
     const initialState = {
         nombre: user.nombre,
         telefono:user.telefono,
@@ -57,7 +59,8 @@ const Perfil = ({ navigation }) => {
                 [
                    { text: 'Aceptar', onPress:() => navigation.navigate('Home') } 
                 ]
-            )
+            ),
+            rollbar.info('Usuario actualizado con éxito')
         })    
         }//finn else
     }

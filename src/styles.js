@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 0.9,
-    backgroundColor: "#f5fcff"
+    backgroundColor: "#fff"
   },
   topBar: {
     height: 56,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderBottomWidth: 0.5,
     justifyContent: "center",
-    paddingVertical: 15,
+    paddingVertical: 25,
   },
   listItemStatus: {
     paddingLeft: 5,

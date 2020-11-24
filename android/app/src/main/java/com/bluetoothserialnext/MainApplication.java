@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.rollbar.RollbarReactNative;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
@@ -52,6 +53,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+     RollbarReactNative.init(this, "5bd9c0b5e69042e8882f955c0bed1699", "production");
   }
 
   /**

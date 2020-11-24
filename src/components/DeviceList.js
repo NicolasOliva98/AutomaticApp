@@ -3,11 +3,11 @@ import {
   ScrollView,
   Text,
   TouchableHighlight,
-  View,
-  RefreshControl
+  TouchableOpacity,
+  View
 } from "react-native";
 import styles from "../styles";
-
+import Icon from 'react-native-vector-icons/Ionicons'
 class DeviceList extends React.Component {
   constructor(props) {
     super(props);
@@ -22,39 +22,36 @@ class DeviceList extends React.Component {
     }
   };
 
-  onRefresh = async () => {
-    if (typeof this.props.onRefresh === "function") {
-      this.setState({ refreshing: true });
-      await this.props.onRefresh();
-      this.setState({ refreshing: false });
-    }
-  };
 
   render() {
-    const { devices = [] } = this.props;
-    const { refreshing } = this.state;
+    const { devices = [], children } = this.props;
     return (
-      <ScrollView
-        style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.listContainer}>
           {devices.map(device => (
             <TouchableHighlight
-              underlayColor="#ccc"
+              underlayColor="#eee"
               key={device.id}
               style={styles.listItem}
               onPress={this.onDevicePressed(device)}>
               <View style={{ flexDirection: "column" }}>
-                <View style={{ flexDirection: "row" }}>
+      {/*           <View style={{ flexDirection: "row" }}>
                   <Text style={[styles.listItemStatus,{backgroundColor: device.connected ? "green" : "gray",}]}>
                     {device.connected ? "Conectado" : "Desconectado"}
                   </Text>
-                </View>
-                <View style={{flexDirection: "column" }}>
-                  <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+                </View> */}
+                <View style={{flexDirection: 'row'}}>
+                  <Icon name='md-bluetooth'size={25} color='#0278ae'/>
+                  <Text style={{ fontWeight: "bold", fontSize: 18, marginHorizontal:10 }}>
                     {device.name}
                   </Text>
-                </View>
+                  <View>
+                  </View>
+                </View> 
+                {children}
+         
               </View>
+
             </TouchableHighlight>
           ))}
         </View>

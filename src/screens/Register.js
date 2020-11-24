@@ -5,7 +5,6 @@ import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
 import * as Animatable from 'react-native-animatable'
 import useForm from '../hooks/useForm'
 import { validate, clean, format } from '../components/rut'
-import { color } from 'react-native-reanimated'
 
 const colors = {
     primary:'#f5f5f5',
@@ -45,7 +44,7 @@ export default ({ navigation }) => {
                     [
                        { text: 'Ir al inicio', onPress:() => navigation.navigate('Login') } 
                     ]
-                )
+                )   
             }
             Alert.alert(
                 'Error',

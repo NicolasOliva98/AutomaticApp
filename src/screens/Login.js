@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as Animatable from 'react-native-animatable'
 import useForm from '../hooks/useForm'
 
+
 const colors = {
     primary:'#f5f5f5',
     secondary: '#d7fbe8',
@@ -38,14 +39,17 @@ export default ({ navigation }) => {
                 })
                 .then(async (x) => {
                     try {
-                        
-                        await AsyncStorage.setItem('token', x.token)
-                        navigation.navigate('Home')
+                   await AsyncStorage.setItem('token', x.token)
+                      Alert.alert('Iniciando sessión') 
+                      navigation.navigate('Home')
+                       
                     } catch (e) {
                          Alert.alert('Error', e)
+                       
                     }
                 })
                 .catch(e => Alert.alert('Error', e))
+
         }
 
     }
