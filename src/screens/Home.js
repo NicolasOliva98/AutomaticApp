@@ -4,7 +4,8 @@ import { LineChart } from 'react-native-chart-kit'
 import AsyncStorage from '@react-native-community/async-storage'
 import Header from '../components/Header'
 import Icon from 'react-native-vector-icons/Ionicons'
-
+import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Ficon from 'react-native-vector-icons/FontAwesome5'
 
 const colors = {
     primary: '#f5f5f5',
@@ -63,19 +64,37 @@ const Home = ({ navigation }) => {
     }, [])
 
 
-   
+
 
 
     const renderItem = ({ item }) => (
 
 
         <View style={styles.containerList}>
-            <Text>{item.fecha.substring(5,10)}-2020</Text>
-            <Text>{item.hora}</Text>
-            <Text>{item.duracion}</Text>
-            <Text>{item.temperatura}°c</Text>
-            <Text>humedad: {item.humedad}%</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+    <Text style={{ fontSize:18, fontWeight: 'bold', color: colors.dark}}>{item.fecha} {item.hora}h</Text>
+            </View>
 
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical:10}}>
+                <Micon
+                    name='white-balance-sunny'
+                    size={50}
+                    color='#f08a5d'
+                />
+                <Text style={{fontSize:35}}> {item.temperatura}°c</Text>
+            </View>
+
+
+
+
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+            
+                <Text style={{color: '#222'}}>Duración: {item.duracion} min</Text>
+                <Text >Humedad suelo: {item.suelo}%</Text>
+                <Text>Humedad relativa: {item.humedad}%</Text>
+                
+            </View>
+          
         </View>
     )
 
@@ -91,7 +110,7 @@ const Home = ({ navigation }) => {
                 </View> :
                 <>
                     <Header title='Mi registro' iconName={'ios-menu'} onPress={() => navigation.openDrawer()} />
-                    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+                    <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
 
                         <View style={{
                             marginHorizontal: 12, borderRadius: 20, marginTop: 20, borderRadius: 10,
@@ -102,7 +121,7 @@ const Home = ({ navigation }) => {
                             },
                             shadowOpacity: 0.20,
                             shadowRadius: 0.02,
-                            elevation:10,
+                            elevation: 10,
                         }}>
                             <View style={{ flexDirection: 'row', paddingVertical: 10, backgroundColor: '#fff', borderTopRightRadius: 20, borderTopLeftRadius: 20 }}>
                                 <View>
@@ -121,9 +140,9 @@ const Home = ({ navigation }) => {
                                 </View>
                             </View>
                             <View style={styles.detailsweather}>
-                                <Text style={{color:'#fff', fontWeight:'bold'}}>Minima: {(info.temp_min).toFixed()}°c</Text>
-                                <Text style={{color:'#fff', fontWeight:'bold'}}>Maxima: {(info.temp_max).toFixed()}°c</Text>
-                                <Text style={{color:'#fff', fontWeight:'bold'}}>Humedad:{info.humidity}%</Text>
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Minima: {(info.temp_min).toFixed()}°c</Text>
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Maxima: {(info.temp_max).toFixed()}°c</Text>
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Humedad:{info.humidity}%</Text>
                             </View>
                         </View>
 
@@ -143,16 +162,16 @@ const Home = ({ navigation }) => {
                             <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Grafico de tiempo</Text>
                             <LineChart
                                 data={{
-                                    labels: datos.map( x => `${x.fecha.substring(5,10)}`),
+                                    labels: datos.map(x => `${x.fecha.substring(0, 5)}`),
                                     datasets: [
                                         {
-                                            data: datos.map( x => parseInt(x.duracion.substring(0,2))),
-                                             strokeWidth: 3
+                                            data: datos.map(x => parseInt(x.duracion.substring(0, 2))),
+                                            strokeWidth: 3
                                         }
                                     ],
-                                    legend: ["Duración"] 
+                                    legend: ["Duración"]
                                 }}
-                                
+
                                 width={Dimensions.get("window").width - 20} // from react-native
                                 height={220}
                                 yAxisLabel=" "
@@ -160,14 +179,14 @@ const Home = ({ navigation }) => {
                                 yAxisInterval={1} // optional, defaults to 1
                                 chartConfig={{
                                     backgroundColor: "#fff",
-                                    backgroundGradientFrom: "#2FB2FC",
-                                    backgroundGradientTo: "#7FD2E5",
+                                    backgroundGradientFrom: "#83a4d4",
+                                    backgroundGradientTo: "#b6fbff",
                                     decimalPlaces: 0, // optional, defaults to 2dp
                                     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                    labelColor: (opacity = 1) => `rgba(29, 45, 80, ${opacity})`,
                                     style: {
                                         borderRadius: 16,
-                                        
+
                                     },
                                     propsForDots: {
                                         r: "7",
@@ -179,13 +198,13 @@ const Home = ({ navigation }) => {
                                 style={{
                                     marginVertical: 8,
                                     borderRadius: 16,
-                                    
+
                                 }}
                             />
                         </View>
 
 
-                    </View>
+                    </ScrollView>
                 </>
             }
         </SafeAreaView>
@@ -231,9 +250,10 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 20,
     },
     containerList: {
-        width: 120,
+        width: 200,
+        height: 180,
         margin: 3,
-        marginBottom:10,
+        marginBottom: 10,
         padding: 5,
         backgroundColor: '#fff',
         borderRadius: 10,

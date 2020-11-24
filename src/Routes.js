@@ -15,6 +15,7 @@ import WelcomeScreen from './screens/Welcome'
 import LogOutScreen from './screens/Logout'
 
 import Icon from 'react-native-vector-icons/Ionicons'
+import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
 import SideBar from './components/SideBar'
 
 if (Text.defaultProps == null) Text.defaultProps = {};
@@ -51,7 +52,7 @@ const AppNavigator = createDrawerNavigator({
     screen: BluetoothScreen,
     navigationOptions: {
       title: 'Riego',
-      drawerIcon: ({ tintColor }) => <Icon name='home' color={tintColor} size={sizeIcon} />
+      drawerIcon: ({ tintColor }) => <Micon name='watering-can' color={tintColor} size={sizeIcon} />
     }
   },
   Perfil: {

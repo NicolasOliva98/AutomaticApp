@@ -27,6 +27,7 @@ export default props => {
                     source={{uri: user.foto}}
                 />
                 <Text style={styles.Textname}>{user.nombre}</Text>
+                <Text style={{ fontSize:12, color:'#eee'}}>{user.email}</Text>
             </ImageBackground>
             <View style={styles.container}>
                 <DrawerItems {...props} />
@@ -42,8 +43,9 @@ const styles = StyleSheet.create({
         width: 88,
         height: 88,
         borderRadius: 50,
-        borderWidth: 2,
-        borderColor: '#fff'
+        borderWidth: 1,
+        borderColor: '#fff',
+        marginBottom:10
     },
     Textname: {
         fontSize: 20,
