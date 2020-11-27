@@ -18,22 +18,23 @@ import Button from '../components/Button';
 import DeviceList from '../components/DeviceList';
 import Header from '../components/Header';
 import styles from '../styles';
-import { and } from 'react-native-reanimated';
+import moment from 'moment'
 
 global.Buffer = Buffer;
-var today = new Date();
-var dd = today.getDate();
-var mm = today.getMonth() + 1;
-var yyyy = today.getFullYear();
-if (dd < 10) {
-  dd = '0' + dd;
-}
-if (mm < 10) {
-  mm = '0' + mm;
-}
-today = dd + '/' + mm + '/' + yyyy;
-const iconv = require('iconv-lite');
 
+function Timer({ interval, style }) {
+  const pad = (n) => n < 10 ? '0' + n : n
+  const duration = moment.duration(interval)
+  const centiseconds = Math.floor(duration.milliseconds() / 10)
+  return (
+      <View style={styles.timerContainer}>
+          <Text style={style}>{pad(duration.minutes())}:{pad(duration.seconds())}:{pad(centiseconds)}</Text>
+      </View>
+  )
+}
+
+const iconv = require('iconv-lite');
+const today = moment().format("DD/MM/YYYY")
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -47,6 +48,11 @@ class App extends React.Component {
       datos: '',
       newdata: {},
       regando: false,
+      inicio: false,
+      detener: false,
+      start: 0,
+      now: 0,
+      laps: [],
     };
   }
 
@@ -423,11 +429,39 @@ class App extends React.Component {
     }
   }
 
+  DetenerRiego = () => {
+    this.setState({ inicio: false, detener: true })
+    const { suelo, humedad, temperatura } = this.state.newdata;
+    const duracionriego = moment(this.state.now - this.state.start).format("mm:ss:ms")
+    const horariegos = moment().format("hh:mm a");
+    console.log(`Tiempo de riego: ${duracionriego} - temp: ${temperatura} - Humedad R: ${humedad} - Humedad S: ${suelo} - Dia: ${today} - hora: ${horariegos}`);
+    clearInterval(this.timer)
+    this.setState({
+      laps: [0],
+      start: 0,
+      now: 0,
+    })
+  }
+  IniciarRiego = () => {
+    this.setState({ inicio: true })
+    const now = new Date().getTime()
+    this.setState({
+      start: now,
+      now,
+    })
+    this.timer = setInterval(() => {
+      this.setState({ now: new Date().getTime() })
+    }, 100)
+
+
+  }
 
   renderModal = (device, processing) => {
     if (!device) return null;
     const { id, name, connected } = device;
-    const { suelo, humedad, temperatura } = this.state.newdata;
+    const { suelo, humedad, temperatura } = this.state.newdata; 
+    const { now, start, laps } = this.state
+    const timer = now - start
     return (
       <Modal
         animationType='fade'
@@ -436,7 +470,7 @@ class App extends React.Component {
         onRequestClose={() => { }}>
         {device ? (
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{name}</Text> 
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{name}</Text>
             {processing && (
               <ActivityIndicator
                 style={{ marginTop: 15 }}
@@ -444,51 +478,30 @@ class App extends React.Component {
               />
             )}
 
-            {!processing &&  ( 
+            {!processing && (
               <View style={{ flex: 1 }}>
-              <Button
-                title={connected ? "Desconectar" : "Conectar"}
-                style={{ backgroundColor: "#22509d" }}
-                textStyle={{ color: "#fff" }}
-                onPress={() => this.toggleDeviceConnection(device)}
-              />           
+                <Button
+                  title={connected ? "Desconectar" : "Conectar"}
+                  style={{ backgroundColor: "#22509d" }}
+                  textStyle={{ color: "#fff" }}
+                  onPress={() => this.toggleDeviceConnection(device)}
+                />
                 {connected && (
                   <>
-                    {/*  <Button
-                      title='Iniciar Riego'
-                      style={{
-                        backgroundColor: 'green'
-                      }}
-                      textStyle={{ color: "#fff" }}
-                      onPress={() => this.write(id, "T")}
-                    />
-                    <Button 
-                      title='Detener Riego'
-                      style={{
-                        backgroundColor: "red"
-                      }}
-                      textStyle={{ color: "#fff" }}
-                      onPress={() => this.write(id, "T")}
-                    />
-                    <Button
-                      title="leer datos"
-                      style={{
-                        backgroundColor: "#22509d"
-                      }}
-                      textStyle={{ color: "#fff" }}
-                      onPress={() => this.readOne(id)}
-                    /> */}
 
                     <View style={{ marginVertical: 30, justifyContent: 'center', alignItems: 'center' }} >
-                      <Text style={{ fontSize: 45, fontWeight: 'bold' }}>00:00:00</Text>
+                    <Timer
+                    interval={laps.reduce((total, curr) => total + curr, 0) + timer}
+                    style={styles.timer}
+                />
                       <Text style={{ fontSize: 18 }}>{today}</Text>
                       {
                         !this.state.regando ?
-                          <TouchableOpacity onPress={() => this.write(id, "T") && this.setState({ regando: true })} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
+                          <TouchableOpacity onPress={() => this.IniciarRiego(this.write(id, "T") && this.setState({ regando: true }))} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
                             <Text style={{ color: "#2eb66c" }}>Iniciar Riego</Text>
                           </TouchableOpacity>
                           :
-                          <TouchableOpacity onPress={() => this.write(id, "F") && this.setState({ regando: false })} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
+                          <TouchableOpacity onPress={() => this.DetenerRiego(this.write(id, "F") && this.setState({ regando: false }))} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
                             <Text style={{ color: "#2eb66c" }}>Detener Riego</Text>
                           </TouchableOpacity>
                       }
@@ -610,4 +623,8 @@ class App extends React.Component {
     );
   }
 }
+
+
+
+
 export default withSubscription({ subscriptionName: "events" })(App);

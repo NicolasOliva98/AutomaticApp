@@ -14,6 +14,7 @@ const colors = {
     dark: '#40514e'
 }
 
+   
 
 const Home = ({ navigation }) => {
     const [loading, setLoading] = useState(true)
@@ -26,8 +27,6 @@ const Home = ({ navigation }) => {
         desc: "Cargando...",
         icon: "Cargando.."
     })
-
-
     const fetchgeneral = async () => {
         const x = await AsyncStorage.getItem('token')
         const res = await fetch('https://servelessautomatic.vercel.app/api/auth/me', { method: 'GET', headers: { 'Content-Type': 'application/json', authorization: x }, })

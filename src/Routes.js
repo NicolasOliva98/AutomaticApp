@@ -73,7 +73,7 @@ const AppNavigator = createDrawerNavigator({
   LogOut: {
     screen: LogOutScreen,
     navigationOptions:{
-      title:'Cerrar Sessíon',
+      title:'Cerrar Sesión',
       drawerIcon:({tintColor}) => <Icon name='md-log-in' color={tintColor} size={sizeIcon} />
     }
   }

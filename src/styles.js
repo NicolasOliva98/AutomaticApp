@@ -79,7 +79,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#22509d",
     borderRadius: 2,
     elevation: 2
-  }
+  },
+  
+  timer: {
+    color: '#000',
+    fontSize: 76,
+    fontWeight: '800',
+},
+
+timerContainer: {
+  justifyContent: 'center',
+}
 });
 
 export default styles;

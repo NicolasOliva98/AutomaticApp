@@ -22,11 +22,14 @@ const Perfil = ({ navigation }) => {
         const res = await fetch('https://servelessautomatic.vercel.app/api/auth/me', { method: 'GET', headers: { 'Content-Type': 'application/json', authorization: x }, })
         const data = await res.json()
         setUser(data)
+     
         setLoading(false)
     }
     useEffect(() => {
         fetchUser()
     }, [])
+    
+
 
     const initialState = {
         nombre: user.nombre,

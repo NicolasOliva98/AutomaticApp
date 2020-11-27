@@ -16,6 +16,8 @@ export default props => {
     useEffect(() => {
         fetchUser()
     }, [])
+    
+
 
     return (
         <ScrollView>
