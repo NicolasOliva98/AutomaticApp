@@ -27,6 +27,8 @@ export default ({ navigation }) => {
             return Alert.alert('Error!','Debe llenar los campos correspondientes')
         }else if(validate(inputs.rut) === false  ){
             return Alert.alert('Error!', 'Rut no valido, porfavor ingrese el rut correcto. Ejemplo: 11111111-1')
+        }else if(inputs.password.length < 8  ){
+            return Alert.alert('Error!', 'La contraseña debe contener al menos 8 caracteres.')   
         }else{
         fetch('https://servelessautomatic.vercel.app/api/auth/register',{
             method:'POST',
@@ -37,21 +39,13 @@ export default ({ navigation }) => {
         })
         .then(x => x.text())
         .then(x => {
-            if(x === 'Usuario creado con éxito!'){
-                return Alert.alert(
-                    'Exito',
-                    x,
-                    [
-                       { text: 'Ir al inicio', onPress:() => navigation.navigate('Login') } 
-                    ]
-                )   
+            if(x === 'El usuario se creo con éxito'){
+                return Alert.alert('Exito', x, [{ text: 'Ir al inicio', onPress:() => navigation.navigate('Login')}])   
+            }else{
+                Alert.alert('Error', x)
             }
-            Alert.alert(
-                'Error',
-                x,
-            )
         })
-        }//finn else
+        }
     }
     const { subscribe, inputs, handleSubmit } = useForm(initialState, onSubmit)
 
@@ -103,7 +97,7 @@ export default ({ navigation }) => {
             <Text style={styles.text_footer}>Dirección</Text>
             <Text/>
             </View>
-                <View style={[styles.action, { flexDirection:'row' }]}>
+                <View style={[styles.action, { flexDirection:'row'}]}>
                 <Icon
                         name='md-phone-portrait-sharp'
                         color='#222'
@@ -177,7 +171,7 @@ export default ({ navigation }) => {
                         }]}
                     >
                         <Text style={[styles.textSign, {
-                            color: '#222'
+                            color: colors.info
                         }]}>
                             Volver al inicio
                     </Text>
@@ -214,20 +208,21 @@ const styles = StyleSheet.create({
     },
     text_footer: {
         color: '#222',
-        fontSize: 15
+        fontSize: 15,
+        marginTop:10
     },
     action: {
         flexDirection: 'row',
         marginTop: 2,
         borderBottomWidth: 1,
-        borderBottomColor: '#f2f2f2',
+        borderBottomColor: colors.info,
         marginHorizontal:5,
         paddingBottom: 2,
         alignItems: 'center'
     },
     TextInput: {
         flex: 1,
-        paddingLeft: 10,
+        paddingLeft: 5,
         color: '#000',
     },
     button: {

@@ -114,7 +114,7 @@ export default ({ navigation }) => {
                         }]}
                     >
                         <Text style={[styles.textSign, {
-                            color: colors.dark
+                            color: colors.info
                         }]}>
                             Registrarse
                     </Text>
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#f2f2f2',
+        borderBottomColor: colors.info,
         paddingBottom: 5,
         alignItems: 'center'
     },

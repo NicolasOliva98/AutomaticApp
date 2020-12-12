@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Image, SafeAreaView, ScrollView, ActivityIndicator, StatusBar, FlatList, Dimensions } from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react'
+import { View, Text, StyleSheet, Image, SafeAreaView, ScrollView, ActivityIndicator, StatusBar, FlatList, Dimensions, RefreshControl } from 'react-native'
 import { LineChart } from 'react-native-chart-kit'
 import AsyncStorage from '@react-native-community/async-storage'
+import Geolocation from '@react-native-community/geolocation'
 import Header from '../components/Header'
 import Icon from 'react-native-vector-icons/Ionicons'
-import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
-import Ficon from 'react-native-vector-icons/FontAwesome5'
+import jwt_decode from 'jwt-decode'
 
 const colors = {
     primary: '#f5f5f5',
@@ -14,12 +14,23 @@ const colors = {
     dark: '#40514e'
 }
 
-   
+const wait = (timeout) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, timeout);
+    });
+}
 
 const Home = ({ navigation }) => {
+    Geolocation.getCurrentPosition((data) => {
+        setLatitude(data.coords.latitude)
+        setLongitude(data.coords.longitude)
+    })
+    const [latitude, setLatitude] = useState(-33.4685982)
+    const [longitude, setLongitude] = useState(-70.7566206)
+    const [refreshing, setRefreshing] = useState(false)
     const [loading, setLoading] = useState(true)
     const [datos, setRiegos] = useState([])
-    const [user, setUser] = useState([])
+    const [datosreverse, setRiegosreverse] = useState([])
     const [info, setInfo] = useState({
         name: "Cargando...",
         temp: "Cargando..",
@@ -27,12 +38,11 @@ const Home = ({ navigation }) => {
         desc: "Cargando...",
         icon: "Cargando.."
     })
+
     const fetchgeneral = async () => {
         const x = await AsyncStorage.getItem('token')
-        const res = await fetch('https://servelessautomatic.vercel.app/api/auth/me', { method: 'GET', headers: { 'Content-Type': 'application/json', authorization: x }, })
-        const data = await res.json()
-        setUser(data)
-        const res2 = await fetch('http://api.openweathermap.org/data/2.5/weather?q=Santiago&lang=sp&appid=f6757f01d6a1bacc578d10c3308676b8&units=metric', {
+        const decoded = jwt_decode(x)
+        const res2 = await fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&lang=es&appid=f6757f01d6a1bacc578d10c3308676b8&units=metric`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -48,7 +58,10 @@ const Home = ({ navigation }) => {
             desc: data2.weather[0].description,
             icon: data2.weather[0].icon,
         })
-        const res3 = await fetch(`https://servelessautomatic.vercel.app/api/riego/riegouser/${data._id}`, {
+        await AsyncStorage.setItem('temp_min', String(data2.main.temp_min))
+        await AsyncStorage.setItem('temp_max', String(data2.main.temp_max))
+
+        const res3 = await fetch(`https://servelessautomatic.vercel.app/api/riego/riegouser/${decoded._id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -56,44 +69,39 @@ const Home = ({ navigation }) => {
         })
         const riegos = await res3.json()
         setRiegos(riegos)
+        setRiegosreverse(riegos)
         setLoading(false)
     }
     useEffect(() => {
         fetchgeneral()
     }, [])
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
 
 
-
-
+        fetchgeneral()
+        wait(1000).then(() => setRefreshing(false))
+    }, []);
     const renderItem = ({ item }) => (
-
-
         <View style={styles.containerList}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-    <Text style={{ fontSize:18, fontWeight: 'bold', color: colors.dark}}>{item.fecha} {item.hora}h</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.dark }}>{item.fecha} {item.hora}hrs</Text>
             </View>
-
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical:10}}>
-                <Micon
-                    name='white-balance-sunny'
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 10 }}>
+                <Icon
+                    name={parseInt(item.hora) >= 6 && parseInt(item.hora) < 20 ? 'md-sunny' : 'moon'}
                     size={50}
                     color='#f08a5d'
                 />
-                <Text style={{fontSize:35}}> {item.temperatura}°c</Text>
+                <Text style={{ fontSize: 35 }}> {item.temperature}°c</Text>
             </View>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: '#222' }}>Duración: {item.duracion} min</Text>
+                <Text >Humedad suelo: {item.hsuelo}%</Text>
+                <Text>Humedad relativa: {item.humidity}%</Text>
 
-
-
-
-            <View style={{alignItems: 'center', justifyContent: 'center'}}>
-            
-                <Text style={{color: '#222'}}>Duración: {item.duracion} min</Text>
-                <Text >Humedad suelo: {item.suelo}%</Text>
-                <Text>Humedad relativa: {item.humedad}%</Text>
-                
             </View>
-          
         </View>
     )
 
@@ -105,14 +113,15 @@ const Home = ({ navigation }) => {
             {loading ?
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
                     <ActivityIndicator color="#000" size="large" />
-                    <Text style={{ color: '#fff' }}>Cargando...</Text>
+                    <Text style={{ color: '#000' }}>Cargando...</Text>
                 </View> :
                 <>
                     <Header title='Mi registro' iconName={'ios-menu'} onPress={() => navigation.openDrawer()} />
-                    <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
-
+                    <ScrollView style={{ flex: 1, backgroundColor: '#fff' }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} >
                         <View style={{
-                            marginHorizontal: 12, borderRadius: 20, marginTop: 20, borderRadius: 10,
+                            marginHorizontal: 12,
+                            borderRadius: 20,
+                            marginTop: 20,
                             shadowColor: "#000",
                             shadowOffset: {
                                 width: 0,
@@ -147,59 +156,60 @@ const Home = ({ navigation }) => {
 
                         <View style={{ paddingHorizontal: 10 }}>
                             <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Mis riegos</Text>
-                            <FlatList
-                                data={datos}
-                                ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-                                horizontal={true}
-                                renderItem={renderItem}
-                                keyExtractor={(item) => item._id}
-                            />
+                            {datos.length <= 0 ? <Text>No tienes riegos realizados</Text> :
+                                <FlatList
+                                    data={datos}
+                                    ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+                                    horizontal={true}
+                                    renderItem={renderItem}
+                                    keyExtractor={(item) => item._id}
+                                />}
                         </View>
-
-
                         <View style={{ paddingHorizontal: 10 }}>
-                            <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Grafico de tiempo</Text>
-                            <LineChart
-                                data={{
-                                    labels: datos.map(x => `${x.fecha.substring(0, 5)}`),
-                                    datasets: [
-                                        {
-                                            data: datos.map(x => parseInt(x.duracion.substring(0, 2))),
-                                            strokeWidth: 3
-                                        }
-                                    ],
-                                    legend: ["Duración"]
-                                }}
+                            <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Grafico de tiempo del riego</Text>
+                            {datosreverse.length <= 0 ? <Text>No tienes riegos realizados</Text> :
+                                <LineChart
+                                    data={{
+                                        labels: datosreverse.map(x => `${x.fecha.substring(0, 5)}`).reverse().slice(-7),
+                                        datasets: [
+                                            {
+                                                data: datosreverse.map(x => parseInt(x.duracion.substring(0, 2))).reverse().slice(-7),
+                                                strokeWidth: 4
+                                            }
+                                        ],
+                                        legend: ["Duración"]
+                                    }}
 
-                                width={Dimensions.get("window").width - 20} // from react-native
-                                height={220}
-                                yAxisLabel=" "
-                                yAxisSuffix=" min"
-                                yAxisInterval={1} // optional, defaults to 1
-                                chartConfig={{
-                                    backgroundColor: "#fff",
-                                    backgroundGradientFrom: "#83a4d4",
-                                    backgroundGradientTo: "#b6fbff",
-                                    decimalPlaces: 0, // optional, defaults to 2dp
-                                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                                    labelColor: (opacity = 1) => `rgba(29, 45, 80, ${opacity})`,
-                                    style: {
+                                    width={Dimensions.get("window").width - 20} // from react-native
+                                    height={200}
+                                    yAxisLabel=" "
+                                    yAxisSuffix=" min"
+                                    yAxisInterval={1} // optional, defaults to 1
+                                    chartConfig={{
+                                        backgroundColor: "#fff",
+                                        backgroundGradientFrom: "#83a4d4",
+                                        backgroundGradientTo: "#b6fbff",
+                                        decimalPlaces: 0, // optional, defaults to 2dp
+                                        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                        labelColor: (opacity = 1) => `rgba(29, 45, 80, ${opacity})`,
+                                        style: {
+                                            borderRadius: 16,
+
+                                        },
+                                        propsForDots: {
+                                            r: "7",
+                                            strokeWidth: "2",
+                                            stroke: "#fff"
+                                        }
+                                    }}
+                                    bezier
+                                    style={{
+                                        marginVertical: 8,
                                         borderRadius: 16,
 
-                                    },
-                                    propsForDots: {
-                                        r: "7",
-                                        strokeWidth: "2",
-                                        stroke: "#fff"
-                                    }
-                                }}
-                                bezier
-                                style={{
-                                    marginVertical: 8,
-                                    borderRadius: 16,
-
-                                }}
-                            />
+                                    }}
+                                />
+                            }
                         </View>
 
 
@@ -250,8 +260,8 @@ const styles = StyleSheet.create({
     },
     containerList: {
         width: 200,
-        height: 180,
-        margin: 3,
+        height: 170,
+        margin: 2,
         marginBottom: 10,
         padding: 5,
         backgroundColor: '#fff',

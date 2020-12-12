@@ -18,10 +18,10 @@ const data = [
     bg: '#febe29',
   },
   {
-    title: 'Programa tu riego',
-    text: 'Deja regando tu jardín mientras sales',
+    title: 'Controla el horario de tu riego',
+    text: 'Podrás ver la duración de tus riegos',
     image: 'https://automatic-us-east-1.s3.amazonaws.com/ilustraciones/reminder_note.png',
-    bg: '#59b2ab',
+    bg: '#b8de6f',
   },
   {
     title: 'Lista tus riegos',
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ({ navigation}) => {
+export default ({ navigation}) => { 
  const _renderItem = ({item}) => {
     return (
       <View

@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -89,7 +89,21 @@ const styles = StyleSheet.create({
 
 timerContainer: {
   justifyContent: 'center',
+},
+butonwg:{
+  paddingVertical: 15, 
+  backgroundColor: "#fff", 
+  borderColor: '#2eb66c', 
+  borderWidth: 1, 
+  justifyContent: 'center', 
+  alignItems: 'center', 
+  width: '90%', 
+  borderRadius: 10, 
+  marginVertical: 10, 
+  marginTop: 20 
 }
+
+
 });
 
 export default styles;

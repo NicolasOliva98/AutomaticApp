@@ -6,7 +6,6 @@ export default ({navigation}) => {
         AsyncStorage.getItem('token')
         .then(x => {
            navigation.navigate(x ? 'Root' : 'Onboarding')
-           console.log('token:', x)
         })
     },[])
     return(

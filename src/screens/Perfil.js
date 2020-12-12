@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, StatusBar, TextInput, Alert, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, StatusBar, TextInput, Alert } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import Icon from 'react-native-vector-icons/Ionicons'
+import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Header from '../components/Header'
 import useForm from '../hooks/useForm'
-import { validate, clean, format } from '../components/rut'
-
 
 const colors = {
     primary: '#f5f5f5',
@@ -22,15 +21,12 @@ const Perfil = ({ navigation }) => {
         const res = await fetch('https://servelessautomatic.vercel.app/api/auth/me', { method: 'GET', headers: { 'Content-Type': 'application/json', authorization: x }, })
         const data = await res.json()
         setUser(data)
-     
         setLoading(false)
     }
     useEffect(() => {
         fetchUser()
     }, [])
     
-
-
     const initialState = {
         nombre: user.nombre,
         telefono: user.telefono,
@@ -42,10 +38,8 @@ const Perfil = ({ navigation }) => {
     const onSubmit = (values) => {
         if (inputs.nombre === '' || inputs.email === '' || inputs.password === '' || inputs.telefono === '' || inputs.domicilio === '' || inputs.rut === '') {
             return Alert.alert('Error!', 'Debe llenar los campos correspondientes')
-            /* }else if(validate(inputs.rut) === false  ){
-                return Alert.alert('Error!', 'Rut no valido, porfavor ingrese el rut correcto. Ejemplo: 11111111-1') */
         } else {
-            fetch(`https://servelessautomatic.vercel.app/api/auth/modify/${user._id}`, {
+            fetch(`https://servelessautomatic.vercel.app/api/auth/user/modify/${user._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,15 +48,9 @@ const Perfil = ({ navigation }) => {
             })
                 .then(x => x.text())
                 .then(x => {
-                    Alert.alert(
-                        'Exito',
-                        x,
-                        [
-                            { text: 'Aceptar', onPress: () => navigation.navigate('Home') }
-                        ]
-                    )
+                    Alert.alert('Exito', x, [  { text: 'Aceptar', onPress: () => navigation.navigate('Home')}])
                 })
-        }//finn else
+        }
     }
     const { subscribe, inputs, handleSubmit } = useForm(initialState, onSubmit)
     return (
@@ -76,17 +64,16 @@ const Perfil = ({ navigation }) => {
                 <View style={styles.container}>
                     <Header title='Mi Perfil' iconName={'arrow-back'} onPress={() => navigation.goBack()} />
                     <View style={{ justifyContent: 'center', alignItems: 'center', paddingBottom: 15, backgroundColor: colors.info }}>
-                        {/*  <Text style={{ fontSize: 25, color: colors.dark, marginVertical:10,fontWeight: 'bold'}}>Editar Perfil</Text> */}
-                        <Image style={{ width: 100, height: 100, borderRadius: 50, borderColor: colors.dark, borderWidth: 2 }} source={{ uri: user.foto }} />
+                            <Image style={{ width: 100, height: 100, borderRadius: 50, borderColor: '#fff', borderWidth: 1 }} source={{ uri: user.foto }} />
                         <Text style={{ fontSize: 20, color: colors.secondary, fontWeight: 'bold', marginTop: 5 }}>{user.nombre}</Text>
                     </View>
                     
                     <View style={{ flex: 1, paddingHorizontal: 20, paddingVertical: 10 }}>
-                        <Text style={styles.text_footer}>Email</Text>
+                        <Text style={[styles.text_footer,{color:'#ccc'}]}>Email</Text>
                         <View style={styles.action}>
                             <Icon
                                 name='mail'
-                                color='#222'
+                                color='#ccc'
                                 size={22}
                             />
                             <TextInput
@@ -100,13 +87,13 @@ const Perfil = ({ navigation }) => {
                                 onChangeText={subscribe('email')}
                             />
                         </View>
-                        <Text style={styles.text_footer}>Rut</Text>
+                        <Text style={[styles.text_footer,{color:'#ccc'}]}>Rut</Text>
                         <View style={styles.action}>
-                            <Icon
-                                name='mail'
-                                color='#222'
+                        <Micon
+                                name='card-account-details'                        
+                                color='#ccc'
                                 size={22}
-                            />
+                             />
                             <TextInput
                                 autoCapitalize='none'
                                 placeholder='example@gmail.com'
@@ -121,7 +108,7 @@ const Perfil = ({ navigation }) => {
                         <Text style={styles.text_footer}>Nombre</Text>
                         <View style={styles.action}>
                             <Icon
-                                name='mail'
+                                name='ios-person'
                                 color='#222'
                                 size={22}
                             />
@@ -137,7 +124,7 @@ const Perfil = ({ navigation }) => {
                         <Text style={styles.text_footer}>Telefono</Text>
                         <View style={styles.action}>
                             <Icon
-                                name='mail'
+                                name='md-phone-portrait-sharp'
                                 color='#222'
                                 size={22}
                             />
@@ -168,8 +155,9 @@ const Perfil = ({ navigation }) => {
                                 onChangeText={subscribe('domicilio')}
                             />
                         </View>
+                  
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                            <TouchableOpacity onPress={handleSubmit} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
+                            <TouchableOpacity onPress={handleSubmit} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '100%', borderRadius: 10, marginVertical: 10, marginTop: 20 }}>
                                 <Text style={{ color: "#2eb66c" }}>Guardar datos</Text>
                             </TouchableOpacity>
                         </View>
@@ -191,11 +179,12 @@ const Perfil = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.primary
+        backgroundColor: '#fff'
     },
     text_footer: {
         color: colors.dark,
-        fontSize: 15
+        fontSize: 15,
+        marginTop:5
     },
     signIn: {
         width: '50%',
@@ -221,12 +210,12 @@ const styles = StyleSheet.create({
         right: 10,
         top: 10
     },
-    action: {
+      action: {
         flexDirection: 'row',
         marginTop: 1,
         borderBottomWidth: 1,
         borderBottomColor: colors.info,
-        paddingBottom: 2,
+        paddingBottom: 1,
         alignItems: 'center'
     },
 })

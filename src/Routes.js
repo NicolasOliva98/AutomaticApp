@@ -3,7 +3,7 @@ import {Text, Dimensions } from 'react-native'
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
-import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer'
+import { createDrawerNavigator } from 'react-navigation-drawer'
 
 import AuthLoading from './screens/AuthLoading'
 import HomeScreen from './screens/Home'
@@ -13,7 +13,7 @@ import PerfilScreen from './screens/Perfil'
 import BluetoothScreen from './screens/Bluetooth'
 import WelcomeScreen from './screens/Welcome'
 import LogOutScreen from './screens/Logout'
-import StopwatchScreen from './screens/stopwatch'
+import StopWatchScreen from './screens/stopwatch'
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -41,7 +41,7 @@ const OnboardingNavigator = createStackNavigator({
 
 
 const AppNavigator = createDrawerNavigator({
-  Home: {
+   Home: {
     screen: HomeScreen,
     navigationOptions: {
       title: 'Inicio',
@@ -63,11 +63,11 @@ const AppNavigator = createDrawerNavigator({
       drawerIcon: ({ tintColor }) => <Icon name='person' color={tintColor} size={sizeIcon} />
     }
   },
-  Stopwatch:{
-    screen: StopwatchScreen,
+  Stopwatch: {
+    screen: StopWatchScreen,
     navigationOptions: {
       title: 'Stopwatch',
-      drawerIcon: ({ tintColor }) => <Icon name='md-person' color={tintColor} size={sizeIcon} />
+      drawerIcon: ({ tintColor }) => <Icon name='person' color={tintColor} size={sizeIcon} />
     }
   },
   LogOut: {
@@ -78,8 +78,9 @@ const AppNavigator = createDrawerNavigator({
     }
   }
 }, {
-  contentComponent: props => <SideBar {...props} />,
+  contentComponent: props => <SideBar {...props}/>,
   drawerWidth: Dimensions.get('window').width * 0.70,
+  overlayColor:'rgba(0,0,0,0.6)',
   contentOptions: {
     activeBackgroundColor: 'rgba(113,222,215,0.15)',
     activeTintColor: '#0f4c75',

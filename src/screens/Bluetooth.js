@@ -10,16 +10,18 @@ import {
   ToastAndroid,
   StatusBar,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 import BluetoothSerial, { withSubscription } from 'react-native-bluetooth-serial-next';
-import { Buffer } from 'buffer';
-import Button from '../components/Button';
+import AsyncStorage from '@react-native-community/async-storage'
+import { Picker } from '@react-native-picker/picker';
 import DeviceList from '../components/DeviceList';
 import Header from '../components/Header';
+import jwt_decode from "jwt-decode"
+import { Buffer } from 'buffer';
 import styles from '../styles';
 import moment from 'moment'
-
 global.Buffer = Buffer;
 
 function Timer({ interval, style }) {
@@ -27,14 +29,171 @@ function Timer({ interval, style }) {
   const duration = moment.duration(interval)
   const centiseconds = Math.floor(duration.milliseconds() / 10)
   return (
-      <View style={styles.timerContainer}>
-          <Text style={style}>{pad(duration.minutes())}:{pad(duration.seconds())}:{pad(centiseconds)}</Text>
-      </View>
+    <View style={styles.timerContainer}>
+      <Text style={style}>{pad(duration.minutes())}:{pad(duration.seconds())},{pad(centiseconds)}</Text>
+    </View>
   )
 }
 
 const iconv = require('iconv-lite');
 const today = moment().format("DD/MM/YYYY")
+const cultivos = [
+  {
+    nombre: 'Arveja',
+    inicial: 0.45,
+    desarrollo: 0.75,
+    media: 1.15,
+    maduracion: 1
+  },
+  {
+    nombre: 'Berenjena',
+    inicial: 0.45,
+    desarrollo: 0.75,
+    media: 1.15,
+    maduracion: 0.80
+  },
+  {
+    nombre: 'Cebolla',
+    inicial: 0.45,
+    desarrollo: 0.70,
+    media: 1.05,
+    maduracion: 0.75
+  },
+  {
+    nombre: 'Lechuga',
+    inicial: 0.45,
+    desarrollo: 0.60,
+    media: 1,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Maíz',
+    inicial: 0.40,
+    desarrollo: 0.80,
+    media: 1.15,
+    maduracion: 0.70
+  },
+  {
+    nombre: 'Melón',
+    inicial: 0.45,
+    desarrollo: 0.75,
+    media: 1,
+    maduracion: 0.75
+  },
+  {
+    nombre: 'Papa',
+    inicial: 0.45,
+    desarrollo: 0.75,
+    media: 1.15,
+    maduracion: 0.85
+  },
+  {
+    nombre: 'Pimentón',
+    inicial: 0.35,
+    desarrollo: 0.70,
+    media: 1.05,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Poroto verde',
+    inicial: 0.35,
+    desarrollo: 0.70,
+    media: 1.10,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Sandía',
+    inicial: 0.45,
+    desarrollo: 0.75,
+    media: 1,
+    maduracion: 0.70
+  },
+  {
+    nombre: 'Tomate',
+    inicial: 0.45,
+    desarrollo: 0.75,
+    media: 1.15,
+    maduracion: 0.80
+  },
+  {
+    nombre: 'Zanahoria',
+    inicial: 0.45,
+    desarrollo: 0.75,
+    media: 1.05,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Zapallo',
+    inicial: 0.45,
+    desarrollo: 0.70,
+    media: 1,
+    maduracion: 0.70
+  },
+  {
+    nombre: 'Maravilla',
+    inicial: 0.35,
+    desarrollo: 0.75,
+    media: 1.15,
+    maduracion: 0.55
+  },
+  {
+    nombre: 'Betarraga',
+    inicial: 0.40,
+    desarrollo: 0.80,
+    media: 1.15,
+    maduracion: 0.80
+  },
+  {
+    nombre: 'Soja',
+    inicial: 0.35,
+    desarrollo: 0.75,
+    media: 1.10,
+    maduracion: 0.60
+  },
+  {
+    nombre: 'Tabaco',
+    inicial: 0.35,
+    desarrollo: 0.75,
+    media: 1.10,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Avena',
+    inicial: 0.35,
+    desarrollo: 0.75,
+    media: 1.10,
+    maduracion: 0.40
+  },
+  {
+    nombre: 'Cebada',
+    inicial: 0.35,
+    desarrollo: 0.75,
+    media: 1.15,
+    maduracion: 0.45
+  },
+  {
+    nombre: 'Garbanzo',
+    inicial: 0.35,
+    desarrollo: 0.75,
+    media: 1.10,
+    maduracion: 0.65
+  },
+  {
+    nombre: 'Trigo',
+    inicial: 0.35,
+    desarrollo: 0.75,
+    media: 1.15,
+    maduracion: 0.45
+  },
+  {
+    nombre: 'Berries',
+    inicial: 0.3,
+    desarrollo: 1.05,
+    media: 0.5,
+    maduracion: 1.5
+  },
+]
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -46,19 +205,34 @@ class App extends React.Component {
       scanning: false,
       processing: false,
       datos: '',
-      newdata: {},
+      newdata: {
+        humedad: 0,
+        suelo: 0,
+        temperatura: 0
+      },
       regando: false,
       inicio: false,
       detener: false,
       start: 0,
       now: 0,
       laps: [],
+      user_id: '',
+      nombre: 'Arveja',
+      tmin: 0,
+      tmax: 0
     };
   }
 
   async componentDidMount() {
     const isEnabled = await BluetoothSerial.requestEnable();
     const devices = await BluetoothSerial.list();
+    const x = await AsyncStorage.getItem('token');
+    let temp_minima = await AsyncStorage.getItem('temp_min')
+    let temp_maxima = await AsyncStorage.getItem('temp_max')
+    this.setState({ tmin: temp_minima, tmax: temp_maxima })
+    const decoded = jwt_decode(x);
+    this.setState({ user_id: decoded._id })
+
     this.setState({
       isEnabled,
       devices: devices.map(device => ({
@@ -67,7 +241,6 @@ class App extends React.Component {
         connected: false
       }))
     });
-    console.log(devices)
     this.events = this.props.events;
 
     this.events.on("bluetoothEnabled", () => {
@@ -123,7 +296,6 @@ class App extends React.Component {
     try {
       await BluetoothSerial.requestEnable();
       this.setState({ isEnabled });
-
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
@@ -301,7 +473,6 @@ class App extends React.Component {
   };
   connect = async id => {
     this.setState({ processing: true });
-
     try {
       const connected = await BluetoothSerial.device(id).connect();
 
@@ -413,8 +584,10 @@ class App extends React.Component {
     }
   }
   readOne = async () => {
+
     try {
       await BluetoothSerial.read((data, subscription) => {
+
 
         this.setState({ datos: data })
 
@@ -432,9 +605,29 @@ class App extends React.Component {
   DetenerRiego = () => {
     this.setState({ inicio: false, detener: true })
     const { suelo, humedad, temperatura } = this.state.newdata;
-    const duracionriego = moment(this.state.now - this.state.start).format("mm:ss:ms")
-    const horariegos = moment().format("hh:mm a");
-    console.log(`Tiempo de riego: ${duracionriego} - temp: ${temperatura} - Humedad R: ${humedad} - Humedad S: ${suelo} - Dia: ${today} - hora: ${horariegos}`);
+    const duracionriego = moment(this.state.now - this.state.start).format("mm:ss")
+    const horariegos = moment().format("HH:mm");
+    fetch('https://servelessautomatic.vercel.app/api/riego', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: this.state.user_id,
+        fecha: today,
+        hora: horariegos,
+        duracion: duracionriego,
+        temperature: temperatura,
+        humidity: humedad,
+        hsuelo: suelo
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      console.log('Crashed:', data);
+    });
+    Alert.alert('Fin del riego', `Ha finzalizado su riego con una duración de: ${duracionriego}`)
+    //console.log(`id_user : ${this.state.user_id} -  Tiempo de riego: ${duracionriego} - temp: ${temperatura} - Humedad R: ${humedad} - Humedad S: ${suelo} - Dia: ${today} - hora: ${horariegos}`);
     clearInterval(this.timer)
     this.setState({
       laps: [0],
@@ -452,16 +645,23 @@ class App extends React.Component {
     this.timer = setInterval(() => {
       this.setState({ now: new Date().getTime() })
     }, 100)
-
-
   }
 
   renderModal = (device, processing) => {
     if (!device) return null;
     const { id, name, connected } = device;
-    const { suelo, humedad, temperatura } = this.state.newdata; 
+    const { suelo, humedad, temperatura } = this.state.newdata;
     const { now, start, laps } = this.state
     const timer = now - start
+    const one = 0.0023
+    const two = 17.78
+    const ro = 18.2
+    const tmed = (parseInt(this.state.tmin) + parseInt(this.state.tmax)) / 2
+    const parteuno = one * (tmed + two)
+    const partedos = Math.pow((parseInt(this.state.tmax) - parseInt(this.state.tmin)), 0.5)
+    const evp = parteuno * ro * partedos
+    const datosdelcultivos = cultivos.filter(x => x.nombre === this.state.nombre)
+    const { inicial, media, desarrollo, maduracion } = datosdelcultivos[0]
     return (
       <Modal
         animationType='fade'
@@ -469,43 +669,62 @@ class App extends React.Component {
         visible={true}
         onRequestClose={() => { }}>
         {device ? (
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{name}</Text>
+          <ScrollView style={{ flex: 1 }}>
+            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>{connected ? `Conectado a ${name}` : name}</Text>
+            </View>
             {processing && (
               <ActivityIndicator
+                color='#000'
                 style={{ marginTop: 15 }}
                 size={Platform.OS === "ios" ? 1 : 60}
               />
             )}
-
             {!processing && (
               <View style={{ flex: 1 }}>
-                <Button
-                  title={connected ? "Desconectar" : "Conectar"}
-                  style={{ backgroundColor: "#22509d" }}
-                  textStyle={{ color: "#fff" }}
-                  onPress={() => this.toggleDeviceConnection(device)}
-                />
+
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => this.toggleDeviceConnection(device)} style={[styles.butonwg, { paddingVertical: 5, width:'50%' }]}>
+                    <Text style={{ color: "#2eb66c" }}>{connected ? "Desconectar" : "Conectar"}</Text>
+                  </TouchableOpacity>
+                </View>
+
                 {connected && (
                   <>
-
-                    <View style={{ marginVertical: 30, justifyContent: 'center', alignItems: 'center' }} >
-                    <Timer
-                    interval={laps.reduce((total, curr) => total + curr, 0) + timer}
-                    style={styles.timer}
-                />
+                    <View style={{ justifyContent: 'center', alignItems: 'center' }} >
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>¿Que deseas regar?</Text>
+                        <Picker
+                          selectedValue={this.state.nombre}
+                          mode='dialog'
+                          dropdownIconColor='#2eb66c'
+                          style={{ height: 50, width: 200, borderColor: '#000', borderWidth: 2 }}
+                          onValueChange={(itemValue, itemIndex) =>
+                            this.setState({ nombre: itemValue })
+                          }>
+                          {cultivos.map(x => <Picker.Item key={x.nombre} label={x.nombre} value={x.nombre} />)}
+                        </Picker>
+                      </View>
+                      <View>
+                        <Text>Pequeña: {((evp * inicial) * 10).toFixed(2)} litros =  {((((evp * inicial) * 10) * 60) / 120).toFixed(2)} minutos </Text>
+                        <Text>Mediana: {((evp * media) * 10).toFixed(2)} litros =  {((((evp * media) * 10) * 60) / 120).toFixed(2)} minutos</Text>
+                        <Text>Desarrollo: {((evp * desarrollo) * 10).toFixed(2)} litros =  {((((evp * desarrollo) * 10) * 60) / 120).toFixed(2)} minutos</Text>
+                        <Text>Cosechable:  {((evp * maduracion) * 10).toFixed(2)} litros =  {((((evp * maduracion) * 10) * 60) / 120).toFixed(2)} minutos</Text>
+                      </View>
+                    </View>
+                    <View style={{ marginVertical: 10, justifyContent: 'center', alignItems: 'center' }} >
+                      <Timer interval={laps.reduce((total, curr) => total + curr, 0) + timer} style={styles.timer} />
                       <Text style={{ fontSize: 18 }}>{today}</Text>
                       {
                         !this.state.regando ?
-                          <TouchableOpacity onPress={() => this.IniciarRiego(this.write(id, "T") && this.setState({ regando: true }))} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
+                          <TouchableOpacity onPress={() => this.IniciarRiego(this.write(id, "T") && this.setState({ regando: true }))} style={styles.butonwg}>
                             <Text style={{ color: "#2eb66c" }}>Iniciar Riego</Text>
                           </TouchableOpacity>
                           :
-                          <TouchableOpacity onPress={() => this.DetenerRiego(this.write(id, "F") && this.setState({ regando: false }))} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
+                          <TouchableOpacity onPress={() => this.DetenerRiego(this.write(id, "F") && this.setState({ regando: false }))} style={styles.butonwg}>
                             <Text style={{ color: "#2eb66c" }}>Detener Riego</Text>
                           </TouchableOpacity>
                       }
-
                     </View>
 
                     <View style={{ flex: 1, paddingHorizontal: 15 }}>
@@ -519,7 +738,13 @@ class App extends React.Component {
                           <Text style={{ color: '#fff', fontSize: 80, fontWeight: 'bold' }}>{temperatura}</Text>
                           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#fff', fontSize: 20, fontWeight: '300' }}>Temperatura actual</Text>
-                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>Agradable</Text>
+                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>   {
+                              temperatura >= 0 && temperatura < 10 ? 'Baja' :
+                                temperatura >= 11 && temperatura < 18 ? 'Medio' :
+                                  temperatura >= 19 && temperatura < 25 ? 'Agradable' :
+                                    temperatura >= 26 && temperatura < 35 ? 'Caluroso' :
+                                      temperatura >= 36 && temperatura < 45 ? 'Extremo calor' : ' '
+                            } </Text>
                           </View>
                           <View style={{ position: 'absolute', top: 15, left: 120 }}>
                             <Text style={{ color: '#fff', fontSize: 35, fontWeight: 'bold' }}>°c</Text>
@@ -535,7 +760,16 @@ class App extends React.Component {
                           <Text style={{ color: '#2eb66c', fontSize: 80, fontWeight: 'bold' }}>{humedad}</Text>
                           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#2eb66c', fontSize: 20, fontWeight: '300' }}>Humedad actual</Text>
-                            <Text style={{ color: '#2eb66c', fontSize: 20, fontWeight: 'bold' }}>Agradable</Text>
+                            <Text style={{ color: '#2eb66c', fontSize: 20, fontWeight: 'bold' }}>
+                              {
+                                humedad >= 0 && humedad < 10 ? 'Muy baja' :
+                                  humedad >= 11 && humedad < 20 ? 'Baja' :
+                                    humedad >= 21 && humedad < 40 ? 'Media' :
+                                      humedad >= 41 && humedad < 80 ? 'Alta' :
+                                        humedad >= 81 && humedad < 100 ? 'Muy Alta' :
+                                          ' '
+                              }
+                            </Text>
                           </View>
                           <View style={{ position: 'absolute', top: 15, left: 120 }}>
                             <Text style={{ color: '#2eb66c', fontSize: 35, fontWeight: 'bold' }}>%</Text>
@@ -575,20 +809,15 @@ class App extends React.Component {
             <TouchableOpacity onPress={() => this.setState({ device: null })} style={{ position: 'absolute', top: 10, right: 10, width: 40, height: 40, borderRadius: 40, justifyContent: 'center', alignItems: 'center' }}   >
               <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 15 }}>X</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
 
         ) : null}
       </Modal>
     );
   };
 
-
-
-
-
   render() {
     const { isEnabled, device, devices, processing } = this.state;
-
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar backgroundColor='#409b74' />
@@ -623,8 +852,4 @@ class App extends React.Component {
     );
   }
 }
-
-
-
-
 export default withSubscription({ subscriptionName: "events" })(App);
