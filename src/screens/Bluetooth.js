@@ -17,6 +17,8 @@ import BluetoothSerial, { withSubscription } from 'react-native-bluetooth-serial
 import AsyncStorage from '@react-native-community/async-storage'
 import { Picker } from '@react-native-picker/picker';
 import DeviceList from '../components/DeviceList';
+import { Timer } from 'react-native-stopwatch-timer';
+import RadioForm from 'react-native-simple-radio-button';
 import Header from '../components/Header';
 import jwt_decode from "jwt-decode"
 import { Buffer } from 'buffer';
@@ -24,7 +26,8 @@ import styles from '../styles';
 import moment from 'moment'
 global.Buffer = Buffer;
 
-function Timer({ interval, style }) {
+
+function Stopwatch({ interval, style }) {
   const pad = (n) => n < 10 ? '0' + n : n
   const duration = moment.duration(interval)
   const centiseconds = Math.floor(duration.milliseconds() / 10)
@@ -35,6 +38,15 @@ function Timer({ interval, style }) {
   )
 }
 
+const options = {
+  container: {
+    width: '100%', justifyContent: 'center', alignItems: 'center'
+  },
+  text: {
+    fontSize: 45,
+    color: '#000',
+  }
+}
 const iconv = require('iconv-lite');
 const today = moment().format("DD/MM/YYYY")
 const cultivos = [
@@ -219,8 +231,15 @@ class App extends React.Component {
       user_id: '',
       nombre: 'Arveja',
       tmin: 0,
-      tmax: 0
+      tmax: 0,
+      timerStart: false,
+      totalDuration: 10000,
+      initialRadioform: -1,
+      timerReset: true,
+      currentTab: 1,
     };
+    this.toggleTimer = this.toggleTimer.bind(this);
+    this.resetTimer = this.resetTimer.bind(this);
   }
 
   async componentDidMount() {
@@ -232,8 +251,7 @@ class App extends React.Component {
     this.setState({ tmin: temp_minima, tmax: temp_maxima })
     const decoded = jwt_decode(x);
     this.setState({ user_id: decoded._id })
-
-    this.setState({
+      this.setState({
       isEnabled,
       devices: devices.map(device => ({
         ...device,
@@ -280,7 +298,7 @@ class App extends React.Component {
     this.events.on("data", result => {
       if (result) {
         const { id, data } = result;
-        console.log(`Data recivida ${id} : ${data}`);
+        //console.log(`Data recivida ${id} : ${data}`);
       }
     });
 
@@ -588,9 +606,7 @@ class App extends React.Component {
     try {
       await BluetoothSerial.read((data, subscription) => {
 
-
         this.setState({ datos: data })
-
         this.setState({ newdata: JSON.parse(this.state.datos) });
         if (this.imBoredNow && subscription) {
           BluetoothSerial.removeSubscription(subscription);
@@ -647,6 +663,29 @@ class App extends React.Component {
     }, 100)
   }
 
+  onTabClick = (currentTab) => {
+    this.setState({
+      currentTab: currentTab,
+    });
+  }
+
+  toggleTimer() {
+    this.setState({ timerStart: !this.state.timerStart, timerReset: false });
+  }
+
+  resetTimer() {
+    const { suelo, humedad, temperatura } = this.state.newdata;
+    const horariegos = moment().format("HH:mm");
+    const mmtoMin = moment(this.state.totalDuration).format('mm:ss')
+    console.log(`id_user : ${this.state.user_id} -  Tiempo de riego: ${mmtoMin} - temp: ${temperatura} - Humedad R: ${humedad} - Humedad S: ${suelo} - Dia: ${today} - hora: ${horariegos}`);
+    Alert.alert('Fin del riego', `Ha finzalizado su riego con una duración de: ${mmtoMin}`)
+    this.setState({ timerStart: false, timerReset: true, totalDuration: 0 })
+
+  }
+  handleTimerComplete = () => (
+    this.resetTimer()   
+  )
+
   renderModal = (device, processing) => {
     if (!device) return null;
     const { id, name, connected } = device;
@@ -662,6 +701,12 @@ class App extends React.Component {
     const evp = parteuno * ro * partedos
     const datosdelcultivos = cultivos.filter(x => x.nombre === this.state.nombre)
     const { inicial, media, desarrollo, maduracion } = datosdelcultivos[0]
+    const data = [
+      { label: 'Inicial', value: ((((((evp * inicial) * 10) * 60) / 120).toFixed(2)) * 60000) },
+      { label: 'Media', value: ((((((evp * media) * 10) * 60) / 120).toFixed(2)) * 60000) },
+      { label: 'Desarrollo', value: ((((((evp * desarrollo) * 10) * 60) / 120).toFixed(2)) * 60000) },
+      { label: 'Madura', value: ((((((evp * maduracion) * 10) * 60) / 120).toFixed(2)) * 60000) },
+    ]
     return (
       <Modal
         animationType='fade'
@@ -684,7 +729,7 @@ class App extends React.Component {
               <View style={{ flex: 1 }}>
 
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => this.toggleDeviceConnection(device)} style={[styles.butonwg, { paddingVertical: 5, width:'50%' }]}>
+                  <TouchableOpacity onPress={() => this.toggleDeviceConnection(device)} style={[styles.butonwg, { paddingVertical: 5, width: '50%' }]}>
                     <Text style={{ color: "#2eb66c" }}>{connected ? "Desconectar" : "Conectar"}</Text>
                   </TouchableOpacity>
                 </View>
@@ -692,7 +737,31 @@ class App extends React.Component {
                 {connected && (
                   <>
                     <View style={{ justifyContent: 'center', alignItems: 'center' }} >
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <View style={styles.tabs}>
+                        <Text onPress={() => { this.onTabClick(1) }} style={[styles.tabTextStyle, this.state.currentTab === 1 ? styles.tabUnderline : null,]}>Riego común</Text>
+                        <Text onPress={() => { this.onTabClick(2) }} style={[styles.tabTextStyle, this.state.currentTab === 2 ? styles.tabUnderline : null,]}>Riego personalizado </Text>
+                      </View>
+                      {this.state.currentTab === 1 && (
+                        <View style={{ backgroundColor: '#fff' }}>
+                          <View style={{ marginVertical: 10, justifyContent: 'center', alignItems: 'center' }} >
+                            <Stopwatch interval={laps.reduce((total, curr) => total + curr, 0) + timer} style={styles.timer} />
+                            <Text style={{ fontSize: 18 }}>{today}</Text>
+                            {
+                              !this.state.regando ?
+                                <TouchableOpacity onPress={() => this.IniciarRiego(this.write(id, "T") && this.setState({ regando: true }))} style={styles.butonwg}>
+                                  <Text style={{ color: "#2eb66c" }}>Iniciar Riego</Text>
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity onPress={() => this.DetenerRiego(this.write(id, "F") && this.setState({ regando: false }))} style={styles.butonwg}>
+                                  <Text style={{ color: "#2eb66c" }}>Detener Riego</Text>
+                                </TouchableOpacity>
+                            }
+                          </View>
+                        </View>
+                      )}
+                      {this.state.currentTab === 2 && (
+                        <View style={{ backgroundColor: '#fff' }}>
+                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>¿Que deseas regar?</Text>
                         <Picker
                           selectedValue={this.state.nombre}
@@ -711,20 +780,31 @@ class App extends React.Component {
                         <Text>Desarrollo: {((evp * desarrollo) * 10).toFixed(2)} litros =  {((((evp * desarrollo) * 10) * 60) / 120).toFixed(2)} minutos</Text>
                         <Text>Cosechable:  {((evp * maduracion) * 10).toFixed(2)} litros =  {((((evp * maduracion) * 10) * 60) / 120).toFixed(2)} minutos</Text>
                       </View>
-                    </View>
-                    <View style={{ marginVertical: 10, justifyContent: 'center', alignItems: 'center' }} >
-                      <Timer interval={laps.reduce((total, curr) => total + curr, 0) + timer} style={styles.timer} />
-                      <Text style={{ fontSize: 18 }}>{today}</Text>
-                      {
-                        !this.state.regando ?
-                          <TouchableOpacity onPress={() => this.IniciarRiego(this.write(id, "T") && this.setState({ regando: true }))} style={styles.butonwg}>
-                            <Text style={{ color: "#2eb66c" }}>Iniciar Riego</Text>
-                          </TouchableOpacity>
-                          :
-                          <TouchableOpacity onPress={() => this.DetenerRiego(this.write(id, "F") && this.setState({ regando: false }))} style={styles.butonwg}>
-                            <Text style={{ color: "#2eb66c" }}>Detener Riego</Text>
-                          </TouchableOpacity>
-                      }
+                      <RadioForm
+              formHorizontal={true}
+              labelHorizontal={false}
+              buttonColor={'green'}
+              selectedButtonColor={'green'}
+              radio_props={data}
+              animation={true}
+              initial={this.state.initialRadioform}
+              onPress={(value) => { this.setState({ totalDuration: value }) }}
+            />
+            <Timer totalDuration={this.state.totalDuration} msecs start={this.state.timerStart}
+              reset={this.state.timerReset}
+              options={options}
+              handleFinish={this.handleTimerComplete}
+              />
+            <TouchableOpacity onPress={this.toggleTimer}>
+              <Text style={{ fontSize: 30 }}>{!this.state.timerStart ? "Start" : "Stop"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.resetTimer}>
+              <Text style={{ fontSize: 30 }}>Reset</Text>
+            </TouchableOpacity>
+                        </View>
+                        
+                      )}
+
                     </View>
 
                     <View style={{ flex: 1, paddingHorizontal: 15 }}>

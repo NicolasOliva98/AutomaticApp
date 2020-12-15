@@ -101,9 +101,33 @@ butonwg:{
   borderRadius: 10, 
   marginVertical: 10, 
   marginTop: 20 
+},
+tabs: {
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
+},
+tabTextStyle: {
+  color: '#ccc',
+  marginLeft: 5,
+  marginRight: 5,
+  fontSize: 20,
+},
+tabUnderline: {
+  textDecorationLine: 'underline',
+},
+buttonsContainer: {
+  flexDirection: 'row',
+  position: 'absolute',
+  bottom: 0,
+  alignItems: 'center',
+},
+buttonStyle: {
+  padding: 10,
+  borderRadius: 5,
+  marginBottom: 10,
+  borderColor: '#000',
+  borderWidth: 1,
 }
-
-
 });
 
 export default styles;

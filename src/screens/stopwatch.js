@@ -1,394 +1,363 @@
-import React, { Component } from 'react'
-import {
-    StyleSheet, Text, View, TouchableOpacity
-} from 'react-native'
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native'
+import { Timer } from 'react-native-stopwatch-timer';
+import RadioForm from 'react-native-simple-radio-button';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-community/async-storage'
-import Icon from 'react-native-vector-icons/MaterialIcons'
-import SectionedMultiSelect from 'react-native-sectioned-multi-select';
-import moment from 'moment'
+import OtherStop from './copiastopwatsh1'
 
 
-
-function Timer({ interval, style }) {
-    const pad = (n) => n < 10 ? '0' + n : n
-    const duration = moment.duration(interval)
-    const centiseconds = Math.floor(duration.milliseconds() / 10)
-    return (
-        <View style={styles.timerContainer}>
-            <Text style={style}>{pad(duration.minutes())}:{pad(duration.seconds())},{pad(centiseconds)}</Text>
-        </View>
-    )
-
-}
-
-
-
-const cultivos = [ 
-    {
-        nombre: 'Arveja',
-        inicial: 0.45,
-        media: 0.75,
-        desarrollo: 1.15,
-        maduracion:1
-    },
-    {
-        nombre: 'Berenjena',
-        inicial: 0.45,
-        media: 0.75,
-        desarrollo: 1.15,
-        maduracion:0.80
-    },
-    {
-        nombre: 'Cebolla',
-        inicial: 0.45,
-        media: 0.70,
-        desarrollo: 1.05,
-        maduracion:0.75
-    },
-    {
-        nombre: 'Lechuga',
-        inicial: 0.45,
-        media: 0.60,
-        desarrollo: 1,
-        maduracion:0.90
-    },
-    {
-        nombre: 'Maíz',
-        inicial: 0.40,
-        media: 0.80,
-        desarrollo: 1.15,
-        maduracion:0.70
-    },
-    {
-        nombre: 'Melón',
-        inicial: 0.45,
-        media: 0.75,
-        desarrollo: 1,
-        maduracion:0.75
-    },
-    {
-        nombre: 'Papa',
-        inicial: 0.45,
-        media: 0.75,
-        desarrollo: 1.15,
-        maduracion:0.85
-    },
-    {
-        nombre: 'Pimentón',
-        inicial: 0.35,
-        media: 0.70,
-        desarrollo: 1.05,
-        maduracion:0.90
-    },
-    {
-        nombre: 'Poroto verde',
-        inicial: 0.35,
-        media: 0.70,
-        desarrollo: 1.10,
-        maduracion:0.90
-    },
-    {
-        nombre: 'Sandía',
-        inicial: 0.45,
-        media: 0.75,
-        desarrollo: 1,
-        maduracion:0.70
-    },
-    {
-        nombre: 'Tomate',
-        inicial: 0.45,
-        media: 0.75,
-        desarrollo: 1.15,
-        maduracion:0.80
-    },
-    {
-        nombre: 'Zanahoria',
-        inicial: 0.45,
-        media: 0.75,
-        desarrollo: 1.05,
-        maduracion:0.90
-    },
-    {
-        nombre: 'Zapallo',
-        inicial: 0.45,
-        media: 0.70,
-        desarrollo: 1,
-        maduracion:0.70
-    },
-    {
-        nombre: 'Maravilla',
-        inicial: 0.35,
-        media: 0.75,
-        desarrollo: 1.15,
-        maduracion:0.55
-    },
-    {
-        nombre: 'Betarraga',
-        inicial: 0.40,
-        media: 0.80,
-        desarrollo: 1.15,
-        maduracion:0.80
-    },
-    {
-        nombre: 'Soja',
-        inicial: 0.35,
-        media: 0.75,
-        desarrollo: 1.10,
-        maduracion:0.60
-    },
-    {
-        nombre: 'Tabaco',
-        inicial: 0.35,
-        media: 0.75,
-        desarrollo: 1.10,
-        maduracion:0.90
-    },
-    {
-        nombre: 'Avena',
-        inicial: 0.35,
-        media: 0.75,
-        desarrollo: 1.10,
-        maduracion:0.40
-    },
-    {
-        nombre: 'Cebada',
-        inicial: 0.35,
-        media: 0.75,
-        desarrollo: 1.15,
-        maduracion:0.45
-    },
-    {
-        nombre: 'Garbanzo',
-        inicial: 0.35,
-        media: 0.75,
-        desarrollo: 1.10,
-        maduracion:0.65
-    },
-    {
-        nombre: 'Trigo',
-        inicial: 0.35,
-        media: 0.75,
-        desarrollo: 1.15,
-        maduracion:0.45
-    },
-    {
-        nombre: 'Berries',
-        inicial: 0.3,
-        media: 1.05,
-        desarrollo: 0.5,
-        maduracion:1.5
-    },  
+const cultivos = [
+  {
+    nombre: 'Arveja',
+    inicial: 0.45,
+    media: 0.75,
+    desarrollo: 1.15,
+    maduracion: 1
+  },
+  {
+    nombre: 'Berenjena',
+    inicial: 0.45,
+    media: 0.75,
+    desarrollo: 1.15,
+    maduracion: 0.80
+  },
+  {
+    nombre: 'Cebolla',
+    inicial: 0.45,
+    media: 0.70,
+    desarrollo: 1.05,
+    maduracion: 0.75
+  },
+  {
+    nombre: 'Lechuga',
+    inicial: 0.45,
+    media: 0.60,
+    desarrollo: 1,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Maíz',
+    inicial: 0.40,
+    media: 0.80,
+    desarrollo: 1.15,
+    maduracion: 0.70
+  },
+  {
+    nombre: 'Melón',
+    inicial: 0.45,
+    media: 0.75,
+    desarrollo: 1,
+    maduracion: 0.75
+  },
+  {
+    nombre: 'Papa',
+    inicial: 0.45,
+    media: 0.75,
+    desarrollo: 1.15,
+    maduracion: 0.85
+  },
+  {
+    nombre: 'Pimentón',
+    inicial: 0.35,
+    media: 0.70,
+    desarrollo: 1.05,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Poroto verde',
+    inicial: 0.35,
+    media: 0.70,
+    desarrollo: 1.10,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Sandía',
+    inicial: 0.45,
+    media: 0.75,
+    desarrollo: 1,
+    maduracion: 0.70
+  },
+  {
+    nombre: 'Tomate',
+    inicial: 0.45,
+    media: 0.75,
+    desarrollo: 1.15,
+    maduracion: 0.80
+  },
+  {
+    nombre: 'Zanahoria',
+    inicial: 0.45,
+    media: 0.75,
+    desarrollo: 1.05,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Zapallo',
+    inicial: 0.45,
+    media: 0.70,
+    desarrollo: 1,
+    maduracion: 0.70
+  },
+  {
+    nombre: 'Maravilla',
+    inicial: 0.35,
+    media: 0.75,
+    desarrollo: 1.15,
+    maduracion: 0.55
+  },
+  {
+    nombre: 'Betarraga',
+    inicial: 0.40,
+    media: 0.80,
+    desarrollo: 1.15,
+    maduracion: 0.80
+  },
+  {
+    nombre: 'Soja',
+    inicial: 0.35,
+    media: 0.75,
+    desarrollo: 1.10,
+    maduracion: 0.60
+  },
+  {
+    nombre: 'Tabaco',
+    inicial: 0.35,
+    media: 0.75,
+    desarrollo: 1.10,
+    maduracion: 0.90
+  },
+  {
+    nombre: 'Avena',
+    inicial: 0.35,
+    media: 0.75,
+    desarrollo: 1.10,
+    maduracion: 0.40
+  },
+  {
+    nombre: 'Cebada',
+    inicial: 0.35,
+    media: 0.75,
+    desarrollo: 1.15,
+    maduracion: 0.45
+  },
+  {
+    nombre: 'Garbanzo',
+    inicial: 0.35,
+    media: 0.75,
+    desarrollo: 1.10,
+    maduracion: 0.65
+  },
+  {
+    nombre: 'Trigo',
+    inicial: 0.35,
+    media: 0.75,
+    desarrollo: 1.15,
+    maduracion: 0.45
+  },
+  {
+    nombre: 'Berries',
+    inicial: 0.3,
+    media: 1.05,
+    desarrollo: 0.5,
+    maduracion: 1.5
+  },
 ]
-const items = [
-    // this is the parent or 'item'
-    {
-      name: 'Fruits',
-      id: 0,
-      // these are the children or 'sub items'
-      children: [
-        {
-          name: 'Apple',
-          id: 10,
-        },
-        {
-          name: 'Strawberry',
-          id: 17,
-        },
-        {
-          name: 'Pineapple',
-          id: 13,
-        },
-        {
-          name: 'Banana',
-          id: 14,
-        },
-        {
-          name: 'Watermelon',
-          id: 15,
-        },
-        {
-          name: 'Kiwi fruit',
-          id: 16,
-        },
-      ],
-    } 
-  ]
 
-export default class App extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            start: 0,
-            now: 0,
-            laps: [],
-            nombre:'Arveja',
-            tmin:0,
-            tmax:0,
-            selectedItems: [],
-        }       
-    }
-   async componentDidMount(){
+
+export default class TestApp extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      timerStart: false,
+      totalDuration: 10000,
+      initialRadioform: -1,
+      timerReset: true,
+      nombre: 'Arveja',
+      tmin: 0,
+      tmax: 0,
+      selectedItems: [],
+      currentTab: 1,
+      fishing: false,
+     };
+    this.toggleTimer = this.toggleTimer.bind(this);
+    this.resetTimer = this.resetTimer.bind(this);
+    this.toggleStopwatch = this.toggleStopwatch.bind(this);
+    this.resetStopwatch = this.resetStopwatch.bind(this);
+  }
+
+  async componentDidMount() {
     let temp_minima = await AsyncStorage.getItem('temp_min')
     let temp_maxima = await AsyncStorage.getItem('temp_max')
-    this.setState({tmin: temp_minima, tmax: temp_maxima})
-    }
-     componentWillUnmount() {
-        clearInterval(this.timer)
-    }
+    this.setState({ tmin: temp_minima, tmax: temp_maxima })
+   
+      if(this.state.fishing === true) {
+        console.log('envio de datos!!!', this.state.totalDuration);
 
-    start = () => {
-        const now = new Date().getTime()
-        this.setState({
-            start: now,
-            now,
-        })
-        this.timer = setInterval(() => {
-            this.setState({ now: new Date().getTime() })
-        }, 50)
+        this.setState({fishing:false})
+      }else{
+        null
+      }
+   
+   
+  }
 
-    }
+  onTabClick = (currentTab) => {
+    this.setState({
+      currentTab: currentTab,
+    });
+  }
 
-    stop = () => {
-        const duracionriego = moment(this.state.now - this.state.start).format("mm:ss")
-        console.log('duracion: ', duracionriego);
-        clearInterval(this.timer)
-        this.setState({
-            laps: [0],
-            start: 0,
-            now: 0,
-        })
-    }
+  toggleTimer() {
+    this.setState({ timerStart: !this.state.timerStart, timerReset: false });
+  }
 
-    onSelectedItemsChange = (selectedItems) => {
-        this.setState({ selectedItems });
-      };
-    render() {
-        
-        const one = 0.0023
-        const two=17.78
-        const ro = 18.2
-        const tmed = (parseInt(this.state.tmin) + parseInt(this.state.tmax))/2 
-        const parteuno = one*(tmed+two)
-        const partedos =Math.pow((parseInt(this.state.tmax)- parseInt(this.state.tmin)),0.5)
-        const evp = parteuno*ro*partedos
-        const { now, start, laps } = this.state
-        const timer = now - start 
-        const datosdelcultivos = cultivos.filter(x => x.nombre === this.state.nombre) 
-        const {inicial, media, desarrollo, maduracion} = datosdelcultivos[0]        
-        return (
-            <View style={styles.container}>
-                <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={{fontSize:15, fontWeight:'bold'}}>¿Que deseas regar?</Text>
-                    <Picker
-                    selectedValue={this.state.nombre}
-                    mode='dialog'
-                    dropdownIconColor='#2eb66c'
-                    style={{height: 50, width: 200, borderColor:'#000', borderWidth:2 }}
-                    onValueChange={(itemValue, itemIndex) =>
-                        this.setState({ nombre: itemValue })
-                    }>
-                   {cultivos.map(x => <Picker.Item key={x.nombre} label={x.nombre} value={x.nombre}  />)}        
-                </Picker> 
-                </View>
-        
-                <View>
-                <Text>Inicial: {((evp*inicial)*10).toFixed(2)} litros =  {((((evp *inicial)*10)*60)/120).toFixed(2)} minutos </Text>
-                <Text>Media: {((evp * media)*10).toFixed(2)} litros =  {((((evp *media)*10)*60)/120).toFixed(2)} minutos</Text>
-                <Text>Desarrollo: {((evp * desarrollo)*10).toFixed(2)} litros =  {((((evp *desarrollo)*10)*60)/120).toFixed(2)} minutos</Text>
-                <Text>Madura:  {((evp * maduracion)*10).toFixed(2)} litros =  {((((evp *maduracion)*10)*60)/120).toFixed(2)} minutos</Text>
-                </View>
-               
-                <SectionedMultiSelect
-                    items={items}
-                    IconRenderer={Icon}
-                    uniqueKey="id"
-                    subKey="children"
-                    selectText="Choose some things..."
-                    showDropDowns={true}
-                    readOnlyHeadings={true}
-                    onSelectedItemsChange={this.onSelectedItemsChange}
-                    selectedItems={this.state.selectedItems}
-                    />
+  resetTimer() {
+    console.log('duracion:',this.state.totalDuration / 60000)
+    this.setState({ timerStart: false, timerReset: true, totalDuration: 0 })
+    
 
-                <Timer
-                    interval={laps.reduce((total, curr) => total + curr, 0) + timer}
-                    style={styles.timer}
-                />
-                <TouchableOpacity onPress={() => this.start()} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
-                    <Text style={{ color: "#2eb66c" }}>Iniciar Riego</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.stop()} style={{ paddingVertical: 15, backgroundColor: "#fff", borderColor: "#2eb66c", borderWidth: 1, justifyContent: 'center', alignItems: 'center', width: '60%', borderRadius: 50, marginVertical: 10, marginTop: 20 }}>
-                    <Text style={{ color: "#2eb66c" }}>Detener Riego</Text>
-                </TouchableOpacity>
+  }
+
+  toggleStopwatch() {
+    this.setState({ stopwatchStart: !this.state.stopwatchStart, stopwatchReset: false });
+  }
+
+  resetStopwatch() {
+    this.setState({ stopwatchStart: false, stopwatchReset: true });
+  }
+
+  getFormattedTime(time) {
+    this.currentTime = time;
+  };
+
+
+  handleTimerComplete = () => (
+    this.resetTimer()    
+  )
+  render() {
+
+
+    const one = 0.0023
+    const two = 17.78
+    const ro = 18.2
+    const tmed = (parseInt(this.state.tmin) + parseInt(this.state.tmax)) / 2
+    const parteuno = one * (tmed + two)
+    const partedos = Math.pow((parseInt(this.state.tmax) - parseInt(this.state.tmin)), 0.5)
+    const evp = parteuno * ro * partedos
+    const { now, start, laps } = this.state
+    const timer = now - start
+    const datosdelcultivos = cultivos.filter(x => x.nombre === this.state.nombre)
+    const { inicial, media, desarrollo, maduracion } = datosdelcultivos[0]
+    const data = [
+      { label: 'Inicial', value: ((((((evp * inicial) * 10) * 60) / 120).toFixed(2)) * 60000) },
+      { label: 'Media', value: ((((((evp * media) * 10) * 60) / 120).toFixed(2)) * 60000) },
+      { label: 'Desarrollo', value: ((((((evp * desarrollo) * 10) * 60) / 120).toFixed(2)) * 60000) },
+      { label: 'Madura', value: ((((((evp * maduracion) * 10) * 60) / 120).toFixed(2)) * 60000) },
+    ]
+
+    return (
+      <View style={{ flex: 1, alignItems: 'center',backgroundColor:'#fff' }}>
+         <View style={styles.tabs}>
+         <Text onPress={() => {this.onTabClick(1) }} style={[ styles.tabTextStyle, this.state.currentTab === 1 ? styles.tabUnderline : null, ]}>Riego común</Text>
+        <Text onPress={() => {this.onTabClick(2) }} style={[ styles.tabTextStyle, this.state.currentTab === 2 ? styles.tabUnderline : null, ]}>Riego personalizado </Text>
+         </View>
+          {this.state.currentTab === 1 && (
+          <View style={{backgroundColor:'#fff', height:'50%'}}>
+            <OtherStop/>
+          </View>
+        )}
+
+        {this.state.currentTab === 2 && (
+          <View >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>¿Que deseas regar?</Text>
+              <Picker
+                selectedValue={this.state.nombre}
+                mode='dialog'
+                dropdownIconColor='#2eb66c'
+                style={{ height: 50, width: 200, borderColor: '#000', borderWidth: 2 }}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({ nombre: itemValue, initialRadioform: -1 })
+                }>
+                {cultivos.map(x => <Picker.Item key={x.nombre} label={x.nombre} value={x.nombre} />)
+                }
+              </Picker>
             </View>
-        )
-    }
+
+            <View>
+              <Text>Inicial: {((evp * inicial) * 10).toFixed(2)} litros =  {((((evp * inicial) * 10) * 60) / 120).toFixed(1)} minutos </Text>
+              <Text>Media: {((evp * media) * 10).toFixed(2)} litros =  {((((evp * media) * 10) * 60) / 120).toFixed(1)} minutos</Text>
+              <Text>Desarrollo: {((evp * desarrollo) * 10).toFixed(2)} litros =  {((((evp * desarrollo) * 10) * 60) / 120).toFixed(1)} minutos</Text>
+              <Text>Madura:  {((evp * maduracion) * 10).toFixed(2)} litros =  {((((evp * maduracion) * 10) * 60) / 120).toFixed(1)} minutos</Text>
+            </View>
+            <RadioForm
+              formHorizontal={true}
+              labelHorizontal={false}
+              buttonColor={'green'}
+              selectedButtonColor={'green'}
+              radio_props={data}
+              animation={true}
+              initial={this.state.initialRadioform}
+              onPress={(value) => { this.setState({ totalDuration: value }) }}
+            />
+            <Timer totalDuration={this.state.totalDuration} msecs start={this.state.timerStart}
+              reset={this.state.timerReset}
+              options={options}
+              handleFinish={this.handleTimerComplete}
+              getTime={null} />
+            <TouchableHighlight onPress={this.toggleTimer}>
+              <Text style={{ fontSize: 30 }}>{!this.state.timerStart ? "Start" : "Stop"}</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={this.resetTimer}>
+              <Text style={{ fontSize: 30 }}>Reset</Text>
+            </TouchableHighlight>
+          </View>
+        )}
+
+<TouchableHighlight onPress={this.resetTimer}>
+              <Text style={{ fontSize: 30}}>Reset</Text>
+            </TouchableHighlight>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        paddingTop: 130,
-        paddingHorizontal: 20,
-    },
-    timer: {
-        color: '#000',
-        fontSize: 70,
-        fontWeight: '800',
+  tabs: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  tabTextStyle: {
+    color: '#ccc',
+    marginLeft: 5,
+    marginRight: 5,
+    fontSize: 20,
+  },
+  tabUnderline: {
+    textDecorationLine: 'underline',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 0,
+    alignItems: 'center',
+  },
+  buttonStyle: {
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    borderColor: '#000',
+    borderWidth: 1,
+  },
+});
+const options = {
+  container: {
+    width: '100%', justifyContent: 'center', alignItems: 'center'
+  },
+  text: {
+    fontSize: 45,
+    color: '#000',
+  }
+};
 
-    },
-    button: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonTitle: {
-        fontSize: 18,
-    },
-    buttonBorder: {
-        width: 76,
-        height: 76,
-        borderRadius: 38,
-        borderWidth: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonsRow: {
-        flexDirection: 'row',
-        alignSelf: 'stretch',
-        justifyContent: 'space-between',
-        marginTop: 80,
-        marginBottom: 30,
-    },
-    lapText: {
-        color: '#000',
-        fontSize: 18,
-    },
-    lapTimer: {
-        width: 30,
-    },
-    lap: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderColor: '#151515',
-        borderTopWidth: 1,
-        paddingVertical: 10,
-    },
-    scrollView: {
-        alignSelf: 'stretch',
-    },
-    fastest: {
-        color: '#4BC05F',
-    },
-    slowest: {
-        color: '#CC3531',
-    },
-    timerContainer: {
-        justifyContent: 'center',
-    }
-})

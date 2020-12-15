@@ -166,24 +166,26 @@ const Home = ({ navigation }) => {
                                 />}
                         </View>
                         <View style={{ paddingHorizontal: 10 }}>
-                            <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Grafico de tiempo del riego</Text>
+                            <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Grafico de consumo</Text>
                             {datosreverse.length <= 0 ? <Text>No tienes riegos realizados</Text> :
+                                <>
+                                <Text>{`ha consumido ${ datosreverse.map(x => (120*parseInt(x.duracion.substring(0, 2)))/60 ).reverse().slice(-7).reduce((acc, curr) => acc + curr ) } Litros en los ultimos 7 riegos`} </Text>
                                 <LineChart
                                     data={{
                                         labels: datosreverse.map(x => `${x.fecha.substring(0, 5)}`).reverse().slice(-7),
                                         datasets: [
                                             {
-                                                data: datosreverse.map(x => parseInt(x.duracion.substring(0, 2))).reverse().slice(-7),
+                                                data: datosreverse.map(x => (120*parseInt(x.duracion.substring(0, 2)))/60 ).reverse().slice(-7),
                                                 strokeWidth: 4
                                             }
                                         ],
-                                        legend: ["Duración"]
+                                        legend: ['Litros']
                                     }}
 
                                     width={Dimensions.get("window").width - 20} // from react-native
                                     height={200}
                                     yAxisLabel=" "
-                                    yAxisSuffix=" min"
+                                    yAxisSuffix=" Litros"
                                     yAxisInterval={1} // optional, defaults to 1
                                     chartConfig={{
                                         backgroundColor: "#fff",
@@ -209,7 +211,9 @@ const Home = ({ navigation }) => {
 
                                     }}
                                 />
+                                </>
                             }
+
                         </View>
 
 
