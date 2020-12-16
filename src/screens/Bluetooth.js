@@ -26,7 +26,6 @@ import styles from '../styles';
 import moment from 'moment'
 global.Buffer = Buffer;
 
-
 function Stopwatch({ interval, style }) {
   const pad = (n) => n < 10 ? '0' + n : n
   const duration = moment.duration(interval)
@@ -37,7 +36,6 @@ function Stopwatch({ interval, style }) {
     </View>
   )
 }
-
 const options = {
   container: {
     width: '100%', justifyContent: 'center', alignItems: 'center'
@@ -233,7 +231,7 @@ class App extends React.Component {
       tmin: 0,
       tmax: 0,
       timerStart: false,
-      totalDuration: 10000,
+      totalDuration: 0,
       initialRadioform: -1,
       timerReset: true,
       currentTab: 1,
@@ -251,7 +249,7 @@ class App extends React.Component {
     this.setState({ tmin: temp_minima, tmax: temp_maxima })
     const decoded = jwt_decode(x);
     this.setState({ user_id: decoded._id })
-      this.setState({
+    this.setState({
       isEnabled,
       devices: devices.map(device => ({
         ...device,
@@ -318,7 +316,6 @@ class App extends React.Component {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   };
-
   toggleBluetooth = async value => {
     try {
       if (value) {
@@ -612,12 +609,10 @@ class App extends React.Component {
           BluetoothSerial.removeSubscription(subscription);
         }
       }, "\r\n");
-      //ToastAndroid.show("Datos leídos", ToastAndroid.SHORT);
     } catch (e) {
       ToastAndroid.show(e.message, ToastAndroid.SHORT);
     }
   }
-
   DetenerRiego = () => {
     this.setState({ inicio: false, detener: true })
     const { suelo, humedad, temperatura } = this.state.newdata;
@@ -643,7 +638,6 @@ class App extends React.Component {
       console.log('Crashed:', data);
     });
     Alert.alert('Fin del riego', `Ha finzalizado su riego con una duración de: ${duracionriego}`)
-    //console.log(`id_user : ${this.state.user_id} -  Tiempo de riego: ${duracionriego} - temp: ${temperatura} - Humedad R: ${humedad} - Humedad S: ${suelo} - Dia: ${today} - hora: ${horariegos}`);
     clearInterval(this.timer)
     this.setState({
       laps: [0],
@@ -662,30 +656,44 @@ class App extends React.Component {
       this.setState({ now: new Date().getTime() })
     }, 100)
   }
-
   onTabClick = (currentTab) => {
     this.setState({
       currentTab: currentTab,
     });
   }
-
   toggleTimer() {
     this.setState({ timerStart: !this.state.timerStart, timerReset: false });
   }
-
   resetTimer() {
     const { suelo, humedad, temperatura } = this.state.newdata;
     const horariegos = moment().format("HH:mm");
     const mmtoMin = moment(this.state.totalDuration).format('mm:ss')
+    fetch('https://servelessautomatic.vercel.app/api/riego', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: this.state.user_id,
+        fecha: today,
+        hora: horariegos,
+        duracion: mmtoMin,
+        temperature: temperatura,
+        humidity: humedad,
+        hsuelo: suelo
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      console.log('Crashed:', data);
+    });
     console.log(`id_user : ${this.state.user_id} -  Tiempo de riego: ${mmtoMin} - temp: ${temperatura} - Humedad R: ${humedad} - Humedad S: ${suelo} - Dia: ${today} - hora: ${horariegos}`);
-    Alert.alert('Fin del riego', `Ha finzalizado su riego con una duración de: ${mmtoMin}`)
+    Alert.alert('Fin del riego', `Ha finzalizado su riego con una duración de: ${mmtoMin} minutos.`)
     this.setState({ timerStart: false, timerReset: true, totalDuration: 0 })
-
   }
   handleTimerComplete = () => (
-    this.resetTimer()   
+    this.resetTimer()
   )
-
   renderModal = (device, processing) => {
     if (!device) return null;
     const { id, name, connected } = device;
@@ -760,53 +768,51 @@ class App extends React.Component {
                         </View>
                       )}
                       {this.state.currentTab === 2 && (
-                        <View style={{ backgroundColor: '#fff' }}>
-                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>¿Que deseas regar?</Text>
-                        <Picker
-                          selectedValue={this.state.nombre}
-                          mode='dialog'
-                          dropdownIconColor='#2eb66c'
-                          style={{ height: 50, width: 200, borderColor: '#000', borderWidth: 2 }}
-                          onValueChange={(itemValue, itemIndex) =>
-                            this.setState({ nombre: itemValue })
-                          }>
-                          {cultivos.map(x => <Picker.Item key={x.nombre} label={x.nombre} value={x.nombre} />)}
-                        </Picker>
-                      </View>
-                      <View>
-                        <Text>Pequeña: {((evp * inicial) * 10).toFixed(2)} litros =  {((((evp * inicial) * 10) * 60) / 120).toFixed(2)} minutos </Text>
-                        <Text>Mediana: {((evp * media) * 10).toFixed(2)} litros =  {((((evp * media) * 10) * 60) / 120).toFixed(2)} minutos</Text>
-                        <Text>Desarrollo: {((evp * desarrollo) * 10).toFixed(2)} litros =  {((((evp * desarrollo) * 10) * 60) / 120).toFixed(2)} minutos</Text>
-                        <Text>Cosechable:  {((evp * maduracion) * 10).toFixed(2)} litros =  {((((evp * maduracion) * 10) * 60) / 120).toFixed(2)} minutos</Text>
-                      </View>
-                      <RadioForm
-              formHorizontal={true}
-              labelHorizontal={false}
-              buttonColor={'green'}
-              selectedButtonColor={'green'}
-              radio_props={data}
-              animation={true}
-              initial={this.state.initialRadioform}
-              onPress={(value) => { this.setState({ totalDuration: value }) }}
-            />
-            <Timer totalDuration={this.state.totalDuration} msecs start={this.state.timerStart}
-              reset={this.state.timerReset}
-              options={options}
-              handleFinish={this.handleTimerComplete}
-              />
-            <TouchableOpacity onPress={this.toggleTimer}>
-              <Text style={{ fontSize: 30 }}>{!this.state.timerStart ? "Start" : "Stop"}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={this.resetTimer}>
-              <Text style={{ fontSize: 30 }}>Reset</Text>
-            </TouchableOpacity>
+                        <View style={{ flex: 1, backgroundColor: '#fff' }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>¿Que deseas regar?</Text>
+                            <Picker
+                              selectedValue={this.state.nombre}
+                              mode='dialog'
+                              dropdownIconColor='#2eb66c'
+                              style={{ height: 50, width: 200, borderColor: '#000', borderWidth: 2 }}
+                              onValueChange={(itemValue, itemIndex) =>
+                                this.setState({ nombre: itemValue })
+                              }>
+                              {cultivos.map(x => <Picker.Item key={x.nombre} label={x.nombre} value={x.nombre} />)}
+                            </Picker>
+                          </View>
+                          <View style={{ alignItems: 'center' }}>
+                            <Text>Pequeña: {((evp * inicial) * 10).toFixed(2)} litros =  {((((evp * inicial) * 10) * 60) / 120).toFixed(2)} minutos </Text>
+                            <Text>Mediana: {((evp * media) * 10).toFixed(2)} litros =  {((((evp * media) * 10) * 60) / 120).toFixed(2)} minutos</Text>
+                            <Text>Desarrollo: {((evp * desarrollo) * 10).toFixed(2)} litros =  {((((evp * desarrollo) * 10) * 60) / 120).toFixed(2)} minutos</Text>
+                            <Text>Cosechable:  {((evp * maduracion) * 10).toFixed(2)} litros =  {((((evp * maduracion) * 10) * 60) / 120).toFixed(2)} minutos</Text>
+                            <RadioForm
+                              style={{ marginTop: 15 }}
+                              formHorizontal={true}
+                              labelHorizontal={false}
+                              buttonColor={'green'}
+                              selectedButtonColor={'green'}
+                              radio_props={data}
+                              animation={true}
+                              initial={this.state.initialRadioform}
+                              onPress={(value) => { this.setState({ totalDuration: value }) }}
+                            />
+                            <Timer totalDuration={this.state.totalDuration} msecs start={this.state.timerStart}
+                              reset={this.state.timerReset}
+                              options={options}
+                              handleFinish={() => this.handleTimerComplete(this.write(id, "F"))}
+                            />
+                            {
+                              this.state.totalDuration === 0 ? <Text>Seleciona un nivel de riego</Text> :
+                                <TouchableOpacity onPress={() => this.toggleTimer(this.write(id, "T"))} style={styles.butonwg}>
+                                  <Text style={{ color: "#2eb66c" }}>Iniciar Riego</Text>
+                                </TouchableOpacity>
+                            }
+                          </View>
                         </View>
-                        
                       )}
-
                     </View>
-
                     <View style={{ flex: 1, paddingHorizontal: 15 }}>
                       <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Estado de riego</Text>
                       <View style={{
@@ -819,11 +825,11 @@ class App extends React.Component {
                           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#fff', fontSize: 20, fontWeight: '300' }}>Temperatura actual</Text>
                             <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>   {
-                              temperatura >= 0 && temperatura < 10 ? 'Baja' :
-                                temperatura >= 11 && temperatura < 18 ? 'Medio' :
-                                  temperatura >= 19 && temperatura < 25 ? 'Agradable' :
-                                    temperatura >= 26 && temperatura < 35 ? 'Caluroso' :
-                                      temperatura >= 36 && temperatura < 45 ? 'Extremo calor' : ' '
+                              temperatura >= 0 && temperatura <= 10 ? 'Baja' :
+                                temperatura >= 11 && temperatura <= 18 ? 'Medio' :
+                                  temperatura >= 19 && temperatura <= 25 ? 'Agradable' :
+                                    temperatura >= 26 && temperatura <= 35 ? 'Caluroso' :
+                                      temperatura >= 36 && temperatura <= 45 ? 'Extremo calor' : ' '
                             } </Text>
                           </View>
                           <View style={{ position: 'absolute', top: 15, left: 120 }}>
@@ -834,19 +840,18 @@ class App extends React.Component {
                       <View style={{
                         marginVertical: 8,
                         backgroundColor: '#fff', shadowColor: "#000", shadowOffset: { width: 0, height: 3, }, shadowOpacity: 0.27, shadowRadius: 4.65,
-                        elevation: 6, width: '100%', borderRadius: 20, paddingVertical: 15
-                      }}>
+                        elevation: 6, width: '100%', borderRadius: 20, paddingVertical: 15 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 25 }}>
                           <Text style={{ color: '#2eb66c', fontSize: 80, fontWeight: 'bold' }}>{humedad}</Text>
                           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#2eb66c', fontSize: 20, fontWeight: '300' }}>Humedad actual</Text>
                             <Text style={{ color: '#2eb66c', fontSize: 20, fontWeight: 'bold' }}>
                               {
-                                humedad >= 0 && humedad < 10 ? 'Muy baja' :
-                                  humedad >= 11 && humedad < 20 ? 'Baja' :
-                                    humedad >= 21 && humedad < 40 ? 'Media' :
-                                      humedad >= 41 && humedad < 80 ? 'Alta' :
-                                        humedad >= 81 && humedad < 100 ? 'Muy Alta' :
+                                humedad >= 0 && humedad <= 10 ? 'Muy baja' :
+                                  humedad >= 11 && humedad <= 20 ? 'Baja' :
+                                    humedad >= 21 && humedad <= 40 ? 'Media' :
+                                      humedad >= 41 && humedad <= 80 ? 'Alta' :
+                                        humedad >= 81 && humedad <= 100 ? 'Muy Alta' :
                                           ' '
                               }
                             </Text>
@@ -866,11 +871,11 @@ class App extends React.Component {
                           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#2eb66c', fontSize: 20, fontWeight: '300' }}>Humedad Suelo</Text>
                             <Text style={{ color: '#2eb66c', fontSize: 20, fontWeight: 'bold' }}>{
-                              suelo >= 0 && suelo < 10 ? 'Muy baja' :
-                                suelo >= 11 && suelo < 20 ? 'Baja' :
-                                  suelo >= 21 && suelo < 40 ? 'Media' :
-                                    suelo >= 41 && suelo < 80 ? 'Alta' :
-                                      suelo >= 81 && suelo < 100 ? 'Muy Alta' :
+                              suelo >= 0 && suelo <= 10 ? 'Muy baja' :
+                                suelo >= 11 && suelo <= 20 ? 'Baja' :
+                                  suelo >= 21 && suelo <= 40 ? 'Media' :
+                                    suelo >= 41 && suelo <= 80 ? 'Alta' :
+                                      suelo >= 81 && suelo <= 100 ? 'Muy Alta' :
                                         ' '
                             }
                             </Text>
@@ -890,12 +895,10 @@ class App extends React.Component {
               <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 15 }}>X</Text>
             </TouchableOpacity>
           </ScrollView>
-
         ) : null}
       </Modal>
     );
   };
-
   render() {
     const { isEnabled, device, devices, processing } = this.state;
     return (
@@ -924,9 +927,7 @@ class App extends React.Component {
               onDevicePressed={device => this.setState({ device })}
               onRefresh={this.listDevices}
             />
-
           </>
-
         }
       </SafeAreaView>
     );

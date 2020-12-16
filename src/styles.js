@@ -107,12 +107,13 @@ tabs: {
   justifyContent: 'flex-end',
 },
 tabTextStyle: {
-  color: '#ccc',
+  color: '#000',
   marginLeft: 5,
   marginRight: 5,
   fontSize: 20,
 },
 tabUnderline: {
+  fontWeight: 'bold',
   textDecorationLine: 'underline',
 },
 buttonsContainer: {

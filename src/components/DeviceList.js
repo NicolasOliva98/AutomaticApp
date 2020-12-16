@@ -21,7 +21,6 @@ class DeviceList extends React.Component {
     }
   };
 
-
   render() {
     const { devices = [], children } = this.props;
     return (
@@ -34,11 +33,6 @@ class DeviceList extends React.Component {
               style={styles.listItem}
               onPress={this.onDevicePressed(device)}>
               <View style={{ flexDirection: "column" }}>
-      {/*           <View style={{ flexDirection: "row" }}>
-                  <Text style={[styles.listItemStatus,{backgroundColor: device.connected ? "green" : "gray",}]}>
-                    {device.connected ? "Conectado" : "Desconectado"}
-                  </Text>
-                </View> */}
                 <View style={{flexDirection: 'row'}}>
                   <Icon name='md-bluetooth'size={25} color='#0278ae'/>
                   <Text style={{ fontWeight: "bold", fontSize: 18, marginHorizontal:10 }}>
@@ -48,9 +42,7 @@ class DeviceList extends React.Component {
                   </View>
                 </View> 
                 {children}
-         
               </View>
-
             </TouchableHighlight>
           ))}
         </View>

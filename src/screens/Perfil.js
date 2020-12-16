@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, StatusBar, TextInput, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, ActivityIndicator, StatusBar, TextInput, Alert,ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -63,6 +63,7 @@ const Perfil = ({ navigation }) => {
                 </View> :
                 <View style={styles.container}>
                     <Header title='Mi Perfil' iconName={'arrow-back'} onPress={() => navigation.goBack()} />
+                   <ScrollView>
                     <View style={{ justifyContent: 'center', alignItems: 'center', paddingBottom: 15, backgroundColor: colors.info }}>
                             <Image style={{ width: 100, height: 100, borderRadius: 50, borderColor: '#fff', borderWidth: 1 }} source={{ uri: user.foto }} />
                         <Text style={{ fontSize: 20, color: colors.secondary, fontWeight: 'bold', marginTop: 5 }}>{user.nombre}</Text>
@@ -163,13 +164,7 @@ const Perfil = ({ navigation }) => {
                         </View>
 
                     </View>
-                 {/*    <View style={styles.buttonsave}>
-                        <Icon
-                            name='ios-checkmark'
-                            size={23}
-                            color={colors.primary}
-                        />
-                    </View> */}
+                    </ScrollView>
                 </View>
             }
         </SafeAreaView>

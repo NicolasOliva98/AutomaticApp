@@ -13,13 +13,11 @@ const colors = {
     info: '#409b74',
     dark: '#40514e'
 }
-
 const wait = (timeout) => {
     return new Promise(resolve => {
         setTimeout(resolve, timeout);
     });
 }
-
 const Home = ({ navigation }) => {
     Geolocation.getCurrentPosition((data) => {
         setLatitude(data.coords.latitude)
@@ -78,8 +76,6 @@ const Home = ({ navigation }) => {
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-
-
         fetchgeneral()
         wait(1000).then(() => setRefreshing(false))
     }, []);
@@ -157,13 +153,17 @@ const Home = ({ navigation }) => {
                         <View style={{ paddingHorizontal: 10 }}>
                             <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Mis riegos</Text>
                             {datos.length <= 0 ? <Text>No tienes riegos realizados</Text> :
+                            <>
+                             <Text>{`Ha realizado ${datos.length} riegos`}</Text>
                                 <FlatList
                                     data={datos}
                                     ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
                                     horizontal={true}
                                     renderItem={renderItem}
                                     keyExtractor={(item) => item._id}
-                                />}
+                                />
+                               </> 
+                                }
                         </View>
                         <View style={{ paddingHorizontal: 10 }}>
                             <Text style={{ color: '#000', fontSize: 30, fontWeight: 'bold', paddingVertical: 10 }}>Grafico de consumo</Text>
@@ -182,16 +182,16 @@ const Home = ({ navigation }) => {
                                         legend: ['Litros']
                                     }}
 
-                                    width={Dimensions.get("window").width - 20} // from react-native
+                                    width={Dimensions.get("window").width - 20}
                                     height={200}
                                     yAxisLabel=" "
                                     yAxisSuffix=" Litros"
-                                    yAxisInterval={1} // optional, defaults to 1
+                                    yAxisInterval={1}
                                     chartConfig={{
                                         backgroundColor: "#fff",
                                         backgroundGradientFrom: "#83a4d4",
                                         backgroundGradientTo: "#b6fbff",
-                                        decimalPlaces: 0, // optional, defaults to 2dp
+                                        decimalPlaces: 0,
                                         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                                         labelColor: (opacity = 1) => `rgba(29, 45, 80, ${opacity})`,
                                         style: {

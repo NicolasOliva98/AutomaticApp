@@ -16,7 +16,6 @@ void setup() {
 void loop(){
   if (BTSerial.available() > 0) {
     char data(BTSerial.read());
-    //Serial.println(data);
     if (data == 'T') {
       if (flag == 0) {
        digitalWrite(13,HIGH);

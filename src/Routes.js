@@ -13,7 +13,6 @@ import PerfilScreen from './screens/Perfil'
 import BluetoothScreen from './screens/Bluetooth'
 import WelcomeScreen from './screens/Welcome'
 import LogOutScreen from './screens/Logout'
-import StopWatchScreen from './screens/stopwatch'
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import Micon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -60,13 +59,6 @@ const AppNavigator = createDrawerNavigator({
     screen: PerfilScreen,
     navigationOptions: {
       title: 'Mi Perfil',
-      drawerIcon: ({ tintColor }) => <Icon name='person' color={tintColor} size={sizeIcon} />
-    }
-  },
-  Stopwatch: {
-    screen: StopWatchScreen,
-    navigationOptions: {
-      title: 'Stopwatch',
       drawerIcon: ({ tintColor }) => <Icon name='person' color={tintColor} size={sizeIcon} />
     }
   },
