@@ -637,7 +637,7 @@ class App extends React.Component {
     }).then(function (data) {
       console.log('Crashed:', data);
     });
-    Alert.alert('Fin del riego', `Ha finzalizado su riego con una duración de: ${duracionriego}`)
+    Alert.alert('Fin del riego', `Ha finalizado su riego con una duración de: ${duracionriego}`)
     clearInterval(this.timer)
     this.setState({
       laps: [0],
@@ -688,7 +688,7 @@ class App extends React.Component {
       console.log('Crashed:', data);
     });
     console.log(`id_user : ${this.state.user_id} -  Tiempo de riego: ${mmtoMin} - temp: ${temperatura} - Humedad R: ${humedad} - Humedad S: ${suelo} - Dia: ${today} - hora: ${horariegos}`);
-    Alert.alert('Fin del riego', `Ha finzalizado su riego con una duración de: ${mmtoMin} minutos.`)
+    Alert.alert('Fin del riego', `Ha finalizado su riego con una duración de: ${mmtoMin} minutos.`)
     this.setState({ timerStart: false, timerReset: true, totalDuration: 0 })
   }
   handleTimerComplete = () => (
